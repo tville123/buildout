@@ -3,7 +3,15 @@ import { View, Text, TextInput } from 'react-native';
 import { C } from '../theme';
 import s from '../styles';
 
-export default function InputBlock({ label, value, onChangeText, placeholder, unit }) {
+interface Props {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  unit?: string;
+}
+
+export default function InputBlock({ label, value, onChangeText, placeholder, unit }: Props) {
   const [focused, setFocused] = useState(false);
   return (
     <View style={[s.inputBlock, focused && s.inputBlockFocused]}>

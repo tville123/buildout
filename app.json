@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "COAT — Paint Calculator",
-    "slug": "coat-paint-calculator",
+    "name": "Buildout",
+    "slug": "buildout",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.drafthouse.coat",
+      "bundleIdentifier": "com.drafthouse.buildout",
       "buildNumber": "1"
     },
     "android": {
@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f0f0f"
       },
-      "package": "com.drafthouse.coat"
+      "package": "com.drafthouse.buildout"
     },
     "web": {
       "favicon": "./assets/favicon.png"

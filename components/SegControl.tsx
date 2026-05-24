@@ -1,7 +1,22 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import s from '../styles';
 
-export default function SegControl({ options, active, onSelect }) {
+interface SegControlOption<T> {
+  value: T;
+  label: string;
+}
+
+interface SegControlProps<T extends string | number> {
+  options: SegControlOption<T>[];
+  active: T;
+  onSelect: (value: T) => void;
+}
+
+export default function SegControl<T extends string | number>({
+  options,
+  active,
+  onSelect,
+}: SegControlProps<T>) {
   return (
     <View style={s.segControl}>
       {options.map(opt => (

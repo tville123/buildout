@@ -1,8 +1,18 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { C, WALL_NAMES } from '../theme';
 import s from '../styles';
+import type { Wall } from '../types';
 
-export default function WallCard({ wall, index, onUpdate, onRemove, onToggleOpening, onUpdateOpening }) {
+interface Props {
+  wall: Wall;
+  index: number;
+  onUpdate: (field: 'width' | 'height', value: string) => void;
+  onRemove: () => void;
+  onToggleOpening: (type: 'door' | 'window') => void;
+  onUpdateOpening: (field: 'doorW' | 'doorH' | 'windowW' | 'windowH', value: string) => void;
+}
+
+export default function WallCard({ wall, index, onUpdate, onRemove, onToggleOpening, onUpdateOpening }: Props) {
   const raw = wall.width && wall.height ? wall.width * wall.height : null;
   const dW = parseFloat(wall.doorW) || 3;
   const dH = parseFloat(wall.doorH) || 7;
@@ -13,7 +23,7 @@ export default function WallCard({ wall, index, onUpdate, onRemove, onToggleOpen
   return (
     <View style={s.wallCard}>
       <View style={s.wallCardHeader}>
-        <Text style={s.wallName}>{WALL_NAMES[index] || `Wall ${index + 1}`}</Text>
+        <Text style={s.wallName}>{WALL_NAMES[index] ?? `Wall ${index + 1}`}</Text>
         <TouchableOpacity onPress={onRemove} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={s.wallDel}>✕</Text>
         </TouchableOpacity>

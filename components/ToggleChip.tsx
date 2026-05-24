@@ -1,7 +1,14 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import s from '../styles';
 
-export default function ToggleChip({ label, sub, active, onPress }) {
+interface Props {
+  label: string;
+  sub?: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+export default function ToggleChip({ label, sub, active, onPress }: Props) {
   return (
     <TouchableOpacity
       style={[s.toggleChip, active && s.toggleChipActive]}

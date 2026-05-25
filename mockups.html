@@ -7,253 +7,555 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* ── reset ── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #111; font-family: 'IBM Plex Sans', sans-serif; padding: 40px 24px 80px; }
-h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: #fff; text-align: center; margin-bottom: 8px; }
-.subtitle { text-align: center; font-size: 13px; color: #666; margin-bottom: 48px; }
-.row-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; text-align: center; text-transform: uppercase; margin-bottom: 24px; margin-top: 8px; }
-.schemes { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; align-items: flex-start; margin-bottom: 56px; }
-.scheme-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.scheme-badge { font-family: 'IBM Plex Sans', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: #555; }
-.scheme-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: #fff; }
-.phone { width: 310px; background: #000; border-radius: 44px; padding: 11px; box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.08); }
-.phone-inner { border-radius: 34px; overflow: hidden; height: 630px; position: relative; display: flex; flex-direction: column; }
-.notch-bar { height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.notch { width: 100px; height: 26px; border-radius: 0 0 16px 16px; position: absolute; top: 0; }
-.screen-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
-.screen-scroll::-webkit-scrollbar { display: none; }
-.palette { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 310px; }
-.swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.08); }
+
+/* ── page ── */
+body {
+  background: #111;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  padding: 40px 20px 80px;
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px; letter-spacing: 2px;
+  color: #fff; text-align: center; margin-bottom: 6px;
+}
+.page-sub { text-align: center; font-size: 12px; color: #555; margin-bottom: 44px; }
+.row-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 3px; color: #333;
+  text-align: center; text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.schemes { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; align-items: flex-start; margin-bottom: 52px; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.col-badge { font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: #555; }
+.col-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: #fff; }
+
+/* ── phone shell ── */
+.phone {
+  width: 300px;
+  background: #000;
+  border-radius: 42px;
+  padding: 10px;
+  box-shadow: 0 28px 70px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.07);
+}
+.phone-inner {
+  border-radius: 34px;
+  overflow: hidden;
+  height: 620px;
+  position: relative;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+}
+
+/* ── notch ── */
+.notch-bar { height: 38px; background: var(--bg); flex-shrink: 0; position: relative; display: flex; justify-content: center; }
+.notch { width: 96px; height: 24px; background: var(--surf); border-radius: 0 0 14px 14px; }
+
+/* ── scrollable screen content ── */
+.screen { flex: 1; overflow-y: auto; scrollbar-width: none; background: var(--bg); }
+.screen::-webkit-scrollbar { display: none; }
+
+/* ── header ── */
+.hdr { padding: 0 18px 15px; border-bottom: 1px solid var(--bord); }
+.hdr-tag { font-size: 8.5px; letter-spacing: 2.8px; text-transform: uppercase; font-weight: 500; color: var(--acc); margin-bottom: 3px; }
+.hdr-title { font-family: 'Bebas Neue', sans-serif; font-size: 44px; letter-spacing: 2px; line-height: 1; color: var(--text); }
+.hdr-sub { margin-top: 6px; font-size: 10.5px; line-height: 1.6; font-weight: 300; color: var(--dim); }
+
+/* ── sections ── */
+.sec { padding: 13px 18px 0; }
+.sec-label { font-size: 8.5px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 500; color: var(--acc); margin-bottom: 7px; }
+
+/* ── seg control ── */
+.seg { display: flex; background: var(--surf); border: 1px solid var(--bord); border-radius: 9px; padding: 3px; gap: 3px; }
+.seg-btn { flex: 1; padding: 7px 5px; border-radius: 6px; text-align: center; font-size: 11px; color: var(--mid); }
+.seg-btn.on { background: var(--acc); color: var(--rc-text); font-weight: 500; }
+
+/* ── input blocks ── */
+.inputs { display: flex; gap: 6px; }
+.inp { flex: 1; background: var(--surf); border: 1px solid var(--bord); border-radius: 9px; padding: 9px 10px; }
+.inp.focus { border-color: var(--acc); }
+.inp-label { font-size: 8px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dim); margin-bottom: 3px; }
+.inp-val { font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 500; color: var(--text); }
+.inp-unit { font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: var(--dim); margin-top: 1px; }
+
+/* ── toggle chips ── */
+.chips { display: flex; gap: 7px; }
+.chip { flex: 1; background: var(--surf); border: 1px solid var(--bord); border-radius: 8px; padding: 8px 9px; display: flex; align-items: center; gap: 7px; }
+.chip.on { border-color: var(--acc); background: var(--chip-fill); }
+.chip-box { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--bord); flex-shrink: 0; }
+.chip.on .chip-box { background: var(--acc); border-color: var(--acc); display: flex; align-items: center; justify-content: center; }
+.chip-check { font-size: 7.5px; color: var(--rc-text); font-weight: 700; }
+.chip-lbl { font-size: 11px; color: var(--mid); }
+.chip.on .chip-lbl { color: var(--text); }
+
+/* ── result card ── */
+.result { margin: 13px 18px 0; background: var(--rc-bg); border-radius: 13px; padding: 15px; }
+.res-tag { font-size: 8.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--rc-sub); font-weight: 500; margin-bottom: 2px; }
+.res-main { font-family: 'Bebas Neue', sans-serif; font-size: 54px; color: var(--rc-text); letter-spacing: 1px; line-height: 1; }
+.res-unit { font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 300; }
+.res-divider { height: 1px; background: var(--rc-div); margin: 10px 0; }
+.res-row { display: flex; gap: 18px; }
+.res-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: var(--rc-text); }
+.res-lbl { font-size: 8px; letter-spacing: 1.3px; text-transform: uppercase; color: var(--rc-sub); margin-top: 1px; }
+
+/* ── shopping list ── */
+.shop { margin: 9px 18px 0; background: var(--surf); border: 1px solid var(--bord); border-radius: 13px; padding: 12px; }
+.shop-title { font-size: 8.5px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 500; color: var(--acc); margin-bottom: 8px; }
+.shop-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--bord); }
+.shop-item:last-child { border-bottom: none; }
+.shop-name { font-size: 12px; color: var(--text); }
+.shop-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--dim); margin-top: 1px; }
+.shop-qty { font-family: 'Bebas Neue', sans-serif; font-size: 21px; letter-spacing: 1px; color: var(--acc); }
+
+/* ── tip bar ── */
+.tip { margin: 8px 18px 18px; background: var(--tip-fill); border: 1px solid var(--tip-bord); border-radius: 9px; padding: 9px; }
+.tip-txt { font-size: 10px; line-height: 1.6; color: var(--mid); }
+.tip-strong { font-weight: 500; color: var(--acc); }
+
+/* ── tab bar ── */
+.tabs {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 66px;
+  background: var(--surf); border-top: 1px solid var(--bord);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 0 4px 10px;
+}
+.tab { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+.tab-icon { font-size: 16px; }
+.tab-lbl { font-size: 7.5px; font-weight: 500; letter-spacing: 0.5px; color: var(--mid); }
+.tab.on .tab-lbl { color: var(--acc); }
+
+/* ── palette swatches ── */
+.palette { display: flex; gap: 5px; }
+.sw { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.07); }
 </style>
 </head>
 <body>
 
 <h1>Buildout — Color Scheme Mockups</h1>
-<p class="subtitle">Paint Calculator · All five color schemes</p>
+<p class="page-sub">Paint Calculator · All five color schemes</p>
 
-<div id="root"></div>
+<!-- ═══════════════════════════ BRANDED ═══════════════════════════ -->
+<div class="row-label">Branded Schemes</div>
+<div class="schemes">
 
-<script>
-const THEMES = [
-  {
-    badge: 'Current',   name: 'Original',
-    bg: '#0f0f0f', surf: '#1a1a1a', bord: '#2e2e2e',
-    acc: '#f5c842', text: '#f0ede8', dim: '#555', mid: '#888',
-    // result card
-    rcBg: '#f5c842', rcText: '#000', rcSub: 'rgba(0,0,0,0.45)', rcDivider: 'rgba(0,0,0,0.12)',
-  },
-  {
-    badge: 'Option 1',  name: 'Blueprint',
-    bg: '#0a0d14', surf: '#131824', bord: '#1e2a3a',
-    acc: '#4d9fff', text: '#e8edf5', dim: '#3a4a5c', mid: '#6a7d94',
-    rcBg: '#4d9fff', rcText: '#000', rcSub: 'rgba(0,0,0,0.45)', rcDivider: 'rgba(0,0,0,0.12)',
-  },
-  {
-    badge: 'Option 2',  name: 'Ember',
-    bg: '#100d0a', surf: '#1c1714', bord: '#2e2520',
-    acc: '#c97b3a', text: '#f0ebe4', dim: '#4a3d34', mid: '#7a6a5e',
-    rcBg: '#c97b3a', rcText: '#000', rcSub: 'rgba(0,0,0,0.45)', rcDivider: 'rgba(0,0,0,0.12)',
-  },
-  {
-    badge: 'Option 3',  name: 'Dark',
-    bg: '#121212', surf: '#1e1e1e', bord: '#2c2c2c',
-    acc: '#e8e8e8', text: '#e8e8e8', dim: '#3d3d3d', mid: '#6b6b6b',
-    rcBg: '#e8e8e8', rcText: '#000', rcSub: 'rgba(0,0,0,0.4)', rcDivider: 'rgba(0,0,0,0.12)',
-  },
-  {
-    badge: 'Option 4',  name: 'Light',
-    bg: '#f0ece6', surf: '#ffffff', bord: '#e0dbd5',
-    acc: '#1a1714', text: '#1a1714', dim: '#c5bfb8', mid: '#8f8880',
-    rcBg: '#1a1714', rcText: '#fff', rcSub: 'rgba(255,255,255,0.4)', rcDivider: 'rgba(255,255,255,0.12)',
-  },
-];
-
-function hex(color, alpha) {
-  return alpha !== undefined
-    ? color + Math.round(alpha * 255).toString(16).padStart(2, '0')
-    : color;
-}
-
-function buildPhone(t) {
-  const accFill  = t.acc + '11'; // ~7% fill for active chips
-  const tipFill  = t.acc + '0d';
-  const tipBord  = t.acc + '1f';
-  const segActive = `background:${t.acc};color:${t.rcText};font-weight:500;`;
-
-  return `
-<div class="phone">
-  <div class="phone-inner" style="background:${t.bg};">
-
-    <!-- notch -->
-    <div class="notch-bar" style="background:${t.bg};">
-      <div class="notch" style="background:${t.surf};"></div>
-    </div>
-
-    <div class="screen-scroll" style="background:${t.bg};">
-
-      <!-- header -->
-      <div style="padding:0 20px 16px;border-bottom:1px solid ${t.bord};">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.8px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:4px;">Buildout</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2px;line-height:1;color:${t.text};">Paint</div>
-        <div style="margin-top:7px;font-family:'IBM Plex Sans',sans-serif;font-size:11px;line-height:1.6;font-weight:300;color:${t.dim};">Calculate how much paint you need for walls, ceilings, and rooms.</div>
-      </div>
-
-      <!-- mode -->
-      <div style="padding:14px 20px 0;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:8px;">Mode</div>
-        <div style="display:flex;background:${t.surf};border:1px solid ${t.bord};border-radius:10px;padding:3px;gap:3px;">
-          <div style="flex:1;padding:8px 6px;border-radius:7px;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;${segActive}">Full Room</div>
-          <div style="flex:1;padding:8px 6px;border-radius:7px;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;color:${t.mid};">Manual Walls</div>
-        </div>
-      </div>
-
-      <!-- dimensions -->
-      <div style="padding:14px 20px 0;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:8px;">Room Dimensions</div>
-        <div style="display:flex;gap:6px;">
-          <div style="flex:1;background:${t.surf};border:1px solid ${t.acc};border-radius:10px;padding:10px 11px;">
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;color:${t.dim};margin-bottom:3px;">Length</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:${t.text};">12</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:${t.dim};margin-top:1px;">ft</div>
+  <!-- ── Original ── -->
+  <div class="col">
+    <div class="col-badge">Current</div>
+    <div class="col-name">Original</div>
+    <div class="phone">
+      <div class="phone-inner" style="
+        --bg:#0f0f0f; --surf:#1a1a1a; --bord:#2e2e2e;
+        --acc:#f5c842; --text:#f0ede8; --dim:#555; --mid:#888;
+        --rc-bg:#f5c842; --rc-text:#000; --rc-sub:rgba(0,0,0,0.42); --rc-div:rgba(0,0,0,0.12);
+        --chip-fill:rgba(245,200,66,0.07); --tip-fill:rgba(245,200,66,0.05); --tip-bord:rgba(245,200,66,0.14);">
+        <div class="notch-bar"><div class="notch"></div></div>
+        <div class="screen">
+          <div class="hdr">
+            <div class="hdr-tag">Buildout</div>
+            <div class="hdr-title">Paint</div>
+            <div class="hdr-sub">Calculate how much paint you need for walls, ceilings, and rooms.</div>
           </div>
-          <div style="flex:1;background:${t.surf};border:1px solid ${t.bord};border-radius:10px;padding:10px 11px;">
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;color:${t.dim};margin-bottom:3px;">Width</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:${t.text};">10</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:${t.dim};margin-top:1px;">ft</div>
-          </div>
-          <div style="flex:1;background:${t.surf};border:1px solid ${t.bord};border-radius:10px;padding:10px 11px;">
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;color:${t.dim};margin-bottom:3px;">Height</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:${t.text};">9</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:${t.dim};margin-top:1px;">ft</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- openings -->
-      <div style="padding:14px 20px 0;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:8px;">Openings</div>
-        <div style="display:flex;gap:8px;">
-          <div style="flex:1;background:${t.surf};border:1px solid ${t.acc};border-radius:8px;padding:9px 10px;display:flex;align-items:center;gap:8px;background:${accFill};">
-            <div style="width:15px;height:15px;border-radius:3px;border:1.5px solid ${t.acc};background:${t.acc};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <span style="font-size:8px;color:${t.rcText};font-weight:700;">✓</span>
+          <div class="sec">
+            <div class="sec-label">Mode</div>
+            <div class="seg">
+              <div class="seg-btn on">Full Room</div>
+              <div class="seg-btn">Manual Walls</div>
             </div>
-            <span style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;color:${t.text};">1 Door</span>
           </div>
-          <div style="flex:1;background:${t.surf};border:1px solid ${t.bord};border-radius:8px;padding:9px 10px;display:flex;align-items:center;gap:8px;">
-            <div style="width:15px;height:15px;border-radius:3px;border:1.5px solid ${t.bord};flex-shrink:0;"></div>
-            <span style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;color:${t.mid};">Windows</span>
+          <div class="sec">
+            <div class="sec-label">Room Dimensions</div>
+            <div class="inputs">
+              <div class="inp focus"><div class="inp-label">Length</div><div class="inp-val">12</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Width</div><div class="inp-val">10</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Height</div><div class="inp-val">9</div><div class="inp-unit">ft</div></div>
+            </div>
           </div>
+          <div class="sec">
+            <div class="sec-label">Openings</div>
+            <div class="chips">
+              <div class="chip on"><div class="chip-box"><span class="chip-check">✓</span></div><span class="chip-lbl">1 Door</span></div>
+              <div class="chip"><div class="chip-box"></div><span class="chip-lbl">Windows</span></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Surface</div>
+            <div class="seg">
+              <div class="seg-btn" style="font-size:10px;">Smooth</div>
+              <div class="seg-btn on" style="font-size:10px;">Semi-Rough</div>
+              <div class="seg-btn" style="font-size:10px;">Textured</div>
+            </div>
+          </div>
+          <div class="result">
+            <div class="res-tag">Total Paint Needed</div>
+            <div class="res-main">3.7 <span class="res-unit">gallons</span></div>
+            <div class="res-divider"></div>
+            <div class="res-row">
+              <div><div class="res-val">396</div><div class="res-lbl">sq ft</div></div>
+              <div><div class="res-val">2</div><div class="res-lbl">coats</div></div>
+              <div><div class="res-val">350</div><div class="res-lbl">sq ft/gal</div></div>
+            </div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Shopping List — Walls</div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 gal)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 qt)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+          </div>
+          <div class="tip"><div class="tip-txt"><span class="tip-strong">Pro tip:</span> A quart is perfect for small walls or accent coverage.</div></div>
+          <div style="height:66px;"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab on"><div class="tab-icon">🎨</div><div class="tab-lbl">Paint</div></div>
+          <div class="tab"><div class="tab-icon">⬜</div><div class="tab-lbl">Tile</div></div>
+          <div class="tab"><div class="tab-icon">🧱</div><div class="tab-lbl">Grout</div></div>
+          <div class="tab"><div class="tab-icon">📐</div><div class="tab-lbl">LVP</div></div>
+          <div class="tab"><div class="tab-icon">🏠</div><div class="tab-lbl">More</div></div>
         </div>
       </div>
-
-      <!-- surface -->
-      <div style="padding:14px 20px 0;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:8px;">Surface</div>
-        <div style="display:flex;background:${t.surf};border:1px solid ${t.bord};border-radius:10px;padding:3px;gap:3px;">
-          <div style="flex:1;padding:8px 4px;border-radius:7px;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;color:${t.mid};">Smooth</div>
-          <div style="flex:1;padding:8px 4px;border-radius:7px;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;${segActive}">Semi-Rough</div>
-          <div style="flex:1;padding:8px 4px;border-radius:7px;text-align:center;font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;color:${t.mid};">Textured</div>
-        </div>
-      </div>
-
-      <!-- result card -->
-      <div style="margin:14px 20px 0;background:${t.rcBg};border-radius:14px;padding:16px;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:${t.rcSub};font-weight:500;margin-bottom:2px;">Total Paint Needed</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:${t.rcText};letter-spacing:1px;line-height:1;">3.7 <span style="font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:300;">gallons</span></div>
-        <div style="height:1px;background:${t.rcDivider};margin:11px 0;"></div>
-        <div style="display:flex;gap:20px;">
-          <div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;color:${t.rcText};">396</div>
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.3px;text-transform:uppercase;color:${t.rcSub};margin-top:1px;">sq ft</div>
-          </div>
-          <div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;color:${t.rcText};">2</div>
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.3px;text-transform:uppercase;color:${t.rcSub};margin-top:1px;">coats</div>
-          </div>
-          <div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;color:${t.rcText};">350</div>
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8.5px;letter-spacing:1.3px;text-transform:uppercase;color:${t.rcSub};margin-top:1px;">sq ft/gal</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- shopping list -->
-      <div style="margin:10px 20px 0;background:${t.surf};border:1px solid ${t.bord};border-radius:14px;padding:13px;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;color:${t.acc};margin-bottom:9px;">Shopping List — Walls</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid ${t.bord};">
-          <div>
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:${t.text};">Paint (1 gal)</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:${t.dim};margin-top:1px;">walls · semi-rough</div>
-          </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:${t.acc};">3</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;">
-          <div>
-            <div style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:${t.text};">Paint (1 qt)</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:${t.dim};margin-top:1px;">walls · semi-rough</div>
-          </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:${t.acc};">3</div>
-        </div>
-      </div>
-
-      <!-- tip bar -->
-      <div style="margin:8px 20px 20px;background:${tipFill};border:1px solid ${tipBord};border-radius:10px;padding:10px;">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;line-height:1.6;color:${t.mid};">
-          <span style="font-weight:500;color:${t.acc};">Pro tip:</span> A quart is perfect for small walls or accent coverage.
-        </div>
-      </div>
-
-      <!-- tab bar spacer -->
-      <div style="height:70px;flex-shrink:0;"></div>
     </div>
-
-    <!-- tab bar -->
-    <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:${t.surf};border-top:1px solid ${t.bord};display:flex;align-items:center;justify-content:space-around;padding:0 4px 10px;">
-      ${['🎨 Paint','⬜ Tile','🧱 Grout','📐 LVP','🏠 More'].map((tab, i) => {
-        const [icon, label] = tab.split(' ');
-        const active = i === 0;
-        const color = active ? t.acc : t.mid;
-        return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
-          <div style="font-size:17px;">${icon}</div>
-          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:8px;font-weight:500;letter-spacing:0.5px;color:${color};">${label}</div>
-        </div>`;
-      }).join('')}
+    <div class="palette">
+      <div class="sw" style="background:#0f0f0f;"></div><div class="sw" style="background:#1a1a1a;"></div>
+      <div class="sw" style="background:#2e2e2e;"></div><div class="sw" style="background:#f5c842;"></div>
+      <div class="sw" style="background:#f0ede8;"></div>
     </div>
-
   </div>
-</div>`;
-}
 
-function buildPalette(t) {
-  const swatches = [t.bg, t.surf, t.bord, t.acc, t.text];
-  return `<div class="palette">${swatches.map(c =>
-    `<div class="swatch" style="background:${c};" title="${c}"></div>`
-  ).join('')}</div>`;
-}
+  <!-- ── Blueprint ── -->
+  <div class="col">
+    <div class="col-badge">Option 1</div>
+    <div class="col-name">Blueprint</div>
+    <div class="phone">
+      <div class="phone-inner" style="
+        --bg:#0a0d14; --surf:#131824; --bord:#1e2a3a;
+        --acc:#4d9fff; --text:#e8edf5; --dim:#3a4a5c; --mid:#6a7d94;
+        --rc-bg:#4d9fff; --rc-text:#000; --rc-sub:rgba(0,0,0,0.42); --rc-div:rgba(0,0,0,0.12);
+        --chip-fill:rgba(77,159,255,0.07); --tip-fill:rgba(77,159,255,0.05); --tip-bord:rgba(77,159,255,0.14);">
+        <div class="notch-bar"><div class="notch"></div></div>
+        <div class="screen">
+          <div class="hdr">
+            <div class="hdr-tag">Buildout</div>
+            <div class="hdr-title">Paint</div>
+            <div class="hdr-sub">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Mode</div>
+            <div class="seg">
+              <div class="seg-btn on">Full Room</div>
+              <div class="seg-btn">Manual Walls</div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Room Dimensions</div>
+            <div class="inputs">
+              <div class="inp focus"><div class="inp-label">Length</div><div class="inp-val">12</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Width</div><div class="inp-val">10</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Height</div><div class="inp-val">9</div><div class="inp-unit">ft</div></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Openings</div>
+            <div class="chips">
+              <div class="chip on"><div class="chip-box"><span class="chip-check">✓</span></div><span class="chip-lbl">1 Door</span></div>
+              <div class="chip"><div class="chip-box"></div><span class="chip-lbl">Windows</span></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Surface</div>
+            <div class="seg">
+              <div class="seg-btn" style="font-size:10px;">Smooth</div>
+              <div class="seg-btn on" style="font-size:10px;">Semi-Rough</div>
+              <div class="seg-btn" style="font-size:10px;">Textured</div>
+            </div>
+          </div>
+          <div class="result">
+            <div class="res-tag">Total Paint Needed</div>
+            <div class="res-main">3.7 <span class="res-unit">gallons</span></div>
+            <div class="res-divider"></div>
+            <div class="res-row">
+              <div><div class="res-val">396</div><div class="res-lbl">sq ft</div></div>
+              <div><div class="res-val">2</div><div class="res-lbl">coats</div></div>
+              <div><div class="res-val">350</div><div class="res-lbl">sq ft/gal</div></div>
+            </div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Shopping List — Walls</div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 gal)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 qt)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+          </div>
+          <div class="tip"><div class="tip-txt"><span class="tip-strong">Pro tip:</span> A quart is perfect for small walls or accent coverage.</div></div>
+          <div style="height:66px;"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab on"><div class="tab-icon">🎨</div><div class="tab-lbl">Paint</div></div>
+          <div class="tab"><div class="tab-icon">⬜</div><div class="tab-lbl">Tile</div></div>
+          <div class="tab"><div class="tab-icon">🧱</div><div class="tab-lbl">Grout</div></div>
+          <div class="tab"><div class="tab-icon">📐</div><div class="tab-lbl">LVP</div></div>
+          <div class="tab"><div class="tab-icon">🏠</div><div class="tab-lbl">More</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="palette">
+      <div class="sw" style="background:#0a0d14;"></div><div class="sw" style="background:#131824;"></div>
+      <div class="sw" style="background:#1e2a3a;"></div><div class="sw" style="background:#4d9fff;"></div>
+      <div class="sw" style="background:#e8edf5;"></div>
+    </div>
+  </div>
 
-function buildCol(t) {
-  return `
-<div class="scheme-col">
-  <div class="scheme-badge">${t.badge}</div>
-  <div class="scheme-name">${t.name}</div>
-  ${buildPhone(t)}
-  ${buildPalette(t)}
-</div>`;
-}
+  <!-- ── Ember ── -->
+  <div class="col">
+    <div class="col-badge">Option 2</div>
+    <div class="col-name">Ember</div>
+    <div class="phone">
+      <div class="phone-inner" style="
+        --bg:#100d0a; --surf:#1c1714; --bord:#2e2520;
+        --acc:#c97b3a; --text:#f0ebe4; --dim:#4a3d34; --mid:#7a6a5e;
+        --rc-bg:#c97b3a; --rc-text:#000; --rc-sub:rgba(0,0,0,0.42); --rc-div:rgba(0,0,0,0.12);
+        --chip-fill:rgba(201,123,58,0.07); --tip-fill:rgba(201,123,58,0.05); --tip-bord:rgba(201,123,58,0.14);">
+        <div class="notch-bar"><div class="notch"></div></div>
+        <div class="screen">
+          <div class="hdr">
+            <div class="hdr-tag">Buildout</div>
+            <div class="hdr-title">Paint</div>
+            <div class="hdr-sub">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Mode</div>
+            <div class="seg">
+              <div class="seg-btn on">Full Room</div>
+              <div class="seg-btn">Manual Walls</div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Room Dimensions</div>
+            <div class="inputs">
+              <div class="inp focus"><div class="inp-label">Length</div><div class="inp-val">12</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Width</div><div class="inp-val">10</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Height</div><div class="inp-val">9</div><div class="inp-unit">ft</div></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Openings</div>
+            <div class="chips">
+              <div class="chip on"><div class="chip-box"><span class="chip-check">✓</span></div><span class="chip-lbl">1 Door</span></div>
+              <div class="chip"><div class="chip-box"></div><span class="chip-lbl">Windows</span></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Surface</div>
+            <div class="seg">
+              <div class="seg-btn" style="font-size:10px;">Smooth</div>
+              <div class="seg-btn on" style="font-size:10px;">Semi-Rough</div>
+              <div class="seg-btn" style="font-size:10px;">Textured</div>
+            </div>
+          </div>
+          <div class="result">
+            <div class="res-tag">Total Paint Needed</div>
+            <div class="res-main">3.7 <span class="res-unit">gallons</span></div>
+            <div class="res-divider"></div>
+            <div class="res-row">
+              <div><div class="res-val">396</div><div class="res-lbl">sq ft</div></div>
+              <div><div class="res-val">2</div><div class="res-lbl">coats</div></div>
+              <div><div class="res-val">350</div><div class="res-lbl">sq ft/gal</div></div>
+            </div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Shopping List — Walls</div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 gal)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 qt)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+          </div>
+          <div class="tip"><div class="tip-txt"><span class="tip-strong">Pro tip:</span> A quart is perfect for small walls or accent coverage.</div></div>
+          <div style="height:66px;"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab on"><div class="tab-icon">🎨</div><div class="tab-lbl">Paint</div></div>
+          <div class="tab"><div class="tab-icon">⬜</div><div class="tab-lbl">Tile</div></div>
+          <div class="tab"><div class="tab-icon">🧱</div><div class="tab-lbl">Grout</div></div>
+          <div class="tab"><div class="tab-icon">📐</div><div class="tab-lbl">LVP</div></div>
+          <div class="tab"><div class="tab-icon">🏠</div><div class="tab-lbl">More</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="palette">
+      <div class="sw" style="background:#100d0a;"></div><div class="sw" style="background:#1c1714;"></div>
+      <div class="sw" style="background:#2e2520;"></div><div class="sw" style="background:#c97b3a;"></div>
+      <div class="sw" style="background:#f0ebe4;"></div>
+    </div>
+  </div>
 
-const root = document.getElementById('root');
+</div><!-- /branded row -->
 
-// Row 1: branded schemes
-const row1 = document.createElement('div');
-row1.innerHTML = `<div class="row-label">Branded Schemes</div>
-<div class="schemes">${THEMES.slice(0,3).map(buildCol).join('')}</div>`;
-root.appendChild(row1);
 
-// Row 2: system themes
-const row2 = document.createElement('div');
-row2.innerHTML = `<div class="row-label">System Themes</div>
-<div class="schemes">${THEMES.slice(3).map(buildCol).join('')}</div>`;
-root.appendChild(row2);
-</script>
+<!-- ═══════════════════════════ SYSTEM ═══════════════════════════ -->
+<div class="row-label">System Themes</div>
+<div class="schemes">
+
+  <!-- ── Dark ── -->
+  <div class="col">
+    <div class="col-badge">Option 3</div>
+    <div class="col-name">Dark</div>
+    <div class="phone">
+      <div class="phone-inner" style="
+        --bg:#121212; --surf:#1e1e1e; --bord:#2c2c2c;
+        --acc:#e8e8e8; --text:#e8e8e8; --dim:#3d3d3d; --mid:#6b6b6b;
+        --rc-bg:#e8e8e8; --rc-text:#000; --rc-sub:rgba(0,0,0,0.4); --rc-div:rgba(0,0,0,0.12);
+        --chip-fill:rgba(232,232,232,0.06); --tip-fill:rgba(232,232,232,0.04); --tip-bord:rgba(232,232,232,0.1);">
+        <div class="notch-bar"><div class="notch"></div></div>
+        <div class="screen">
+          <div class="hdr">
+            <div class="hdr-tag">Buildout</div>
+            <div class="hdr-title">Paint</div>
+            <div class="hdr-sub">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Mode</div>
+            <div class="seg">
+              <div class="seg-btn on">Full Room</div>
+              <div class="seg-btn">Manual Walls</div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Room Dimensions</div>
+            <div class="inputs">
+              <div class="inp focus"><div class="inp-label">Length</div><div class="inp-val">12</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Width</div><div class="inp-val">10</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Height</div><div class="inp-val">9</div><div class="inp-unit">ft</div></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Openings</div>
+            <div class="chips">
+              <div class="chip on"><div class="chip-box"><span class="chip-check">✓</span></div><span class="chip-lbl">1 Door</span></div>
+              <div class="chip"><div class="chip-box"></div><span class="chip-lbl">Windows</span></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Surface</div>
+            <div class="seg">
+              <div class="seg-btn" style="font-size:10px;">Smooth</div>
+              <div class="seg-btn on" style="font-size:10px;">Semi-Rough</div>
+              <div class="seg-btn" style="font-size:10px;">Textured</div>
+            </div>
+          </div>
+          <div class="result">
+            <div class="res-tag">Total Paint Needed</div>
+            <div class="res-main">3.7 <span class="res-unit">gallons</span></div>
+            <div class="res-divider"></div>
+            <div class="res-row">
+              <div><div class="res-val">396</div><div class="res-lbl">sq ft</div></div>
+              <div><div class="res-val">2</div><div class="res-lbl">coats</div></div>
+              <div><div class="res-val">350</div><div class="res-lbl">sq ft/gal</div></div>
+            </div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Shopping List — Walls</div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 gal)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 qt)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+          </div>
+          <div class="tip"><div class="tip-txt"><span class="tip-strong">Pro tip:</span> A quart is perfect for small walls or accent coverage.</div></div>
+          <div style="height:66px;"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab on"><div class="tab-icon">🎨</div><div class="tab-lbl">Paint</div></div>
+          <div class="tab"><div class="tab-icon">⬜</div><div class="tab-lbl">Tile</div></div>
+          <div class="tab"><div class="tab-icon">🧱</div><div class="tab-lbl">Grout</div></div>
+          <div class="tab"><div class="tab-icon">📐</div><div class="tab-lbl">LVP</div></div>
+          <div class="tab"><div class="tab-icon">🏠</div><div class="tab-lbl">More</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="palette">
+      <div class="sw" style="background:#121212;"></div><div class="sw" style="background:#1e1e1e;"></div>
+      <div class="sw" style="background:#2c2c2c;"></div><div class="sw" style="background:#e8e8e8;"></div>
+      <div class="sw" style="background:#e8e8e8; border-color:rgba(255,255,255,0.2);"></div>
+    </div>
+  </div>
+
+  <!-- ── Light ── -->
+  <div class="col">
+    <div class="col-badge">Option 4</div>
+    <div class="col-name">Light</div>
+    <div class="phone">
+      <div class="phone-inner" style="
+        --bg:#f0ece6; --surf:#ffffff; --bord:#e0dbd5;
+        --acc:#1a1714; --text:#1a1714; --dim:#c5bfb8; --mid:#8f8880;
+        --rc-bg:#1a1714; --rc-text:#fff; --rc-sub:rgba(255,255,255,0.4); --rc-div:rgba(255,255,255,0.12);
+        --chip-fill:rgba(26,23,20,0.05); --tip-fill:rgba(26,23,20,0.04); --tip-bord:rgba(26,23,20,0.1);">
+        <div class="notch-bar" style="background:#f0ece6;"><div class="notch" style="background:#fff;"></div></div>
+        <div class="screen">
+          <div class="hdr">
+            <div class="hdr-tag">Buildout</div>
+            <div class="hdr-title">Paint</div>
+            <div class="hdr-sub">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Mode</div>
+            <div class="seg">
+              <div class="seg-btn on" style="color:#fff;">Full Room</div>
+              <div class="seg-btn">Manual Walls</div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Room Dimensions</div>
+            <div class="inputs">
+              <div class="inp focus"><div class="inp-label">Length</div><div class="inp-val">12</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Width</div><div class="inp-val">10</div><div class="inp-unit">ft</div></div>
+              <div class="inp"><div class="inp-label">Height</div><div class="inp-val">9</div><div class="inp-unit">ft</div></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Openings</div>
+            <div class="chips">
+              <div class="chip on"><div class="chip-box"><span class="chip-check" style="color:#fff;">✓</span></div><span class="chip-lbl">1 Door</span></div>
+              <div class="chip"><div class="chip-box"></div><span class="chip-lbl">Windows</span></div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-label">Surface</div>
+            <div class="seg">
+              <div class="seg-btn" style="font-size:10px;">Smooth</div>
+              <div class="seg-btn on" style="font-size:10px;color:#fff;">Semi-Rough</div>
+              <div class="seg-btn" style="font-size:10px;">Textured</div>
+            </div>
+          </div>
+          <div class="result">
+            <div class="res-tag">Total Paint Needed</div>
+            <div class="res-main">3.7 <span class="res-unit">gallons</span></div>
+            <div class="res-divider"></div>
+            <div class="res-row">
+              <div><div class="res-val">396</div><div class="res-lbl">sq ft</div></div>
+              <div><div class="res-val">2</div><div class="res-lbl">coats</div></div>
+              <div><div class="res-val">350</div><div class="res-lbl">sq ft/gal</div></div>
+            </div>
+          </div>
+          <div class="shop">
+            <div class="shop-title">Shopping List — Walls</div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 gal)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+            <div class="shop-item"><div><div class="shop-name">Paint (1 qt)</div><div class="shop-sub">walls · semi-rough</div></div><div class="shop-qty">3</div></div>
+          </div>
+          <div class="tip"><div class="tip-txt"><span class="tip-strong">Pro tip:</span> A quart is perfect for small walls or accent coverage.</div></div>
+          <div style="height:66px;"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab on"><div class="tab-icon">🎨</div><div class="tab-lbl">Paint</div></div>
+          <div class="tab"><div class="tab-icon">⬜</div><div class="tab-lbl">Tile</div></div>
+          <div class="tab"><div class="tab-icon">🧱</div><div class="tab-lbl">Grout</div></div>
+          <div class="tab"><div class="tab-icon">📐</div><div class="tab-lbl">LVP</div></div>
+          <div class="tab"><div class="tab-icon">🏠</div><div class="tab-lbl">More</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="palette">
+      <div class="sw" style="background:#f0ece6; border-color:rgba(0,0,0,0.1);"></div>
+      <div class="sw" style="background:#ffffff; border-color:rgba(0,0,0,0.1);"></div>
+      <div class="sw" style="background:#e0dbd5; border-color:rgba(0,0,0,0.1);"></div>
+      <div class="sw" style="background:#1a1714;"></div>
+      <div class="sw" style="background:#1a1714;"></div>
+    </div>
+  </div>
+
+</div><!-- /system row -->
+
 </body>
 </html>

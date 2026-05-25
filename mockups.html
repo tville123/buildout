@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buildout — Color Scheme Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #111;
+  font-family: 'IBM Plex Sans', sans-serif;
+  padding: 40px 24px 80px;
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 48px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.schemes {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.scheme-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.scheme-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #666;
+}
+.scheme-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-align: center;
+}
+
+/* ─── Phone shell ─── */
+.phone {
+  width: 320px;
+  background: #000;
+  border-radius: 44px;
+  padding: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.phone-inner {
+  border-radius: 34px;
+  overflow: hidden;
+  height: 640px;
+  position: relative;
+}
+.notch-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.notch {
+  width: 110px;
+  height: 28px;
+  border-radius: 0 0 18px 18px;
+  position: absolute;
+  top: 0;
+}
+
+/* ─── Screen scroll container ─── */
+.screen {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ─── Shared structural styles ─── */
+.app-header {
+  padding: 0 20px 18px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  flex-shrink: 0;
+}
+.header-tag {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.header-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.header-sub {
+  margin-top: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.section {
+  padding: 16px 20px 0;
+}
+.section-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.seg-control {
+  display: flex;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 7px;
+  text-align: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.grid2 {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.grid3 {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.input-block {
+  flex: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 10px 11px;
+}
+.input-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.input-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  font-weight: 500;
+}
+.input-unit {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  margin-top: 1px;
+}
+.toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.toggle-chip {
+  flex: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 8px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip-box {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border-width: 1.5px;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.chip-check {
+  font-size: 8px;
+  color: #000;
+  font-weight: 700;
+}
+.chip-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11.5px;
+}
+.result-card {
+  margin: 16px 20px 0;
+  border-radius: 14px;
+  padding: 18px;
+}
+.result-tag {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.45);
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+.result-main {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 58px;
+  color: #000;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.result-unit {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+}
+.result-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.12);
+  margin: 12px 0;
+}
+.result-breakdown {
+  display: flex;
+  gap: 20px;
+}
+.breakdown-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+}
+.breakdown-lbl {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.45);
+  margin-top: 1px;
+}
+.shopping-card {
+  margin: 10px 20px 0;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 14px;
+  padding: 14px;
+}
+.shopping-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.shop-item:last-child { border-bottom: none; }
+.shop-name {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12.5px;
+}
+.shop-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  margin-top: 1px;
+}
+.shop-qty {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.tip-bar {
+  margin: 8px 20px 20px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 10px;
+}
+.tip-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+/* ─── Tab bar ─── */
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  border-top-width: 1px;
+  border-top-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px 12px;
+  flex-shrink: 0;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
+.tab-icon {
+  font-size: 18px;
+}
+.tab-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Palette swatches ─── */
+.palette {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 320px;
+}
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+.swatch[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ═══════════════════════════════════════
+   SCHEME 1 — Original (Yellow)
+═══════════════════════════════════════ */
+.s1-bg    { background: #0f0f0f; }
+.s1-surf  { background: #1a1a1a; }
+.s1-bord  { border-color: #2e2e2e; }
+.s1-text  { color: #f0ede8; }
+.s1-dim   { color: #555; }
+.s1-mid   { color: #888; }
+.s1-acc   { color: #f5c842; }
+.s1-acc-bg { background: #f5c842; }
+.s1-notch { background: #1a1a1a; }
+
+/* ═══════════════════════════════════════
+   SCHEME 2 — Blueprint (Blue)
+═══════════════════════════════════════ */
+.s2-bg    { background: #0a0d14; }
+.s2-surf  { background: #131824; }
+.s2-bord  { border-color: #1e2a3a; }
+.s2-text  { color: #e8edf5; }
+.s2-dim   { color: #3a4a5c; }
+.s2-mid   { color: #6a7d94; }
+.s2-acc   { color: #4d9fff; }
+.s2-acc-bg { background: #4d9fff; }
+.s2-notch { background: #131824; }
+
+/* Result card for Blueprint uses accent bg */
+.s2-result-tag { color: rgba(0,0,0,0.5); }
+.s2-result-txt { color: #000; }
+
+/* ═══════════════════════════════════════
+   SCHEME 3 — Ember (Copper)
+═══════════════════════════════════════ */
+.s3-bg    { background: #100d0a; }
+.s3-surf  { background: #1c1714; }
+.s3-bord  { border-color: #2e2520; }
+.s3-text  { color: #f0ebe4; }
+.s3-dim   { color: #4a3d34; }
+.s3-mid   { color: #7a6a5e; }
+.s3-acc   { color: #c97b3a; }
+.s3-acc-bg { background: #c97b3a; }
+.s3-notch { background: #1c1714; }
+
+/* active seg */
+.s1-seg-active { background: #f5c842; color: #000; font-weight: 500; }
+.s2-seg-active { background: #4d9fff; color: #000; font-weight: 500; }
+.s3-seg-active { background: #c97b3a; color: #000; font-weight: 500; }
+
+/* chip active */
+.s1-chip-active { border-color: #f5c842; background: rgba(245,200,66,0.06); }
+.s2-chip-active { border-color: #4d9fff; background: rgba(77,159,255,0.07); }
+.s3-chip-active { border-color: #c97b3a; background: rgba(201,123,58,0.07); }
+
+.s1-chip-box-active { background: #f5c842; border-color: #f5c842; }
+.s2-chip-box-active { background: #4d9fff; border-color: #4d9fff; }
+.s3-chip-box-active { background: #c97b3a; border-color: #c97b3a; }
+
+/* tip bar */
+.s1-tip { background: rgba(245,200,66,0.05); border-color: rgba(245,200,66,0.12); }
+.s2-tip { background: rgba(77,159,255,0.05); border-color: rgba(77,159,255,0.12); }
+.s3-tip { background: rgba(201,123,58,0.05); border-color: rgba(201,123,58,0.12); }
+
+.s1-tip-strong { color: #f5c842; }
+.s2-tip-strong { color: #4d9fff; }
+.s3-tip-strong { color: #c97b3a; }
+</style>
+</head>
+<body>
+
+<h1>Buildout — Color Scheme Mockups</h1>
+<p class="subtitle">Paint Calculator · All three color schemes side by side</p>
+
+<div class="schemes">
+
+  <!-- ═══ SCHEME 1: Original ═══ -->
+  <div class="scheme-col">
+    <div class="scheme-label">Current</div>
+    <div class="scheme-name">Original</div>
+    <div class="phone">
+      <div class="phone-inner s1-bg">
+        <div class="screen s1-bg">
+          <!-- Notch -->
+          <div class="notch-bar s1-bg">
+            <div class="notch s1-notch"></div>
+          </div>
+
+          <!-- Header -->
+          <div class="app-header s1-bord" style="border-bottom-width:1px;border-bottom-style:solid;">
+            <div class="header-tag s1-acc">Buildout</div>
+            <div class="header-title s1-text">Paint</div>
+            <div class="header-sub s1-dim">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+
+          <!-- Section: Mode -->
+          <div class="section">
+            <div class="section-label s1-acc">Mode</div>
+            <div class="seg-control s1-surf s1-bord">
+              <div class="seg-btn s1-seg-active">Full Room</div>
+              <div class="seg-btn s1-mid">Manual Walls</div>
+            </div>
+          </div>
+
+          <!-- Section: Room Dimensions -->
+          <div class="section">
+            <div class="section-label s1-acc">Room Dimensions</div>
+            <div class="grid3">
+              <div class="input-block s1-surf s1-bord" style="border-color:#f5c842;">
+                <div class="input-label s1-dim">Length</div>
+                <div class="input-val s1-text">12</div>
+                <div class="input-unit s1-dim">ft</div>
+              </div>
+              <div class="input-block s1-surf s1-bord">
+                <div class="input-label s1-dim">Width</div>
+                <div class="input-val s1-text">10</div>
+                <div class="input-unit s1-dim">ft</div>
+              </div>
+              <div class="input-block s1-surf s1-bord">
+                <div class="input-label s1-dim">Height</div>
+                <div class="input-val s1-text">9</div>
+                <div class="input-unit s1-dim">ft</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Openings -->
+          <div class="section">
+            <div class="section-label s1-acc">Openings</div>
+            <div class="toggle-row">
+              <div class="toggle-chip s1-surf s1-chip-active">
+                <div class="chip-box s1-chip-box-active">
+                  <span class="chip-check">✓</span>
+                </div>
+                <div class="chip-label s1-text" style="font-size:11px;">1 Door</div>
+              </div>
+              <div class="toggle-chip s1-surf s1-bord">
+                <div class="chip-box s1-bord" style="border-color:#2e2e2e;"></div>
+                <div class="chip-label s1-mid" style="font-size:11px;">Windows</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Coverage -->
+          <div class="section">
+            <div class="section-label s1-acc">Surface</div>
+            <div class="seg-control s1-surf s1-bord">
+              <div class="seg-btn s1-mid" style="font-size:10.5px;">Smooth</div>
+              <div class="seg-btn s1-seg-active" style="font-size:10.5px;">Semi-Rough</div>
+              <div class="seg-btn s1-mid" style="font-size:10.5px;">Textured</div>
+            </div>
+          </div>
+
+          <!-- Result Card -->
+          <div class="result-card s1-acc-bg">
+            <div class="result-tag">Total Paint Needed</div>
+            <div class="result-main">3.7 <span class="result-unit">gallons</span></div>
+            <div class="result-divider"></div>
+            <div class="result-breakdown">
+              <div>
+                <div class="breakdown-val">396</div>
+                <div class="breakdown-lbl">sq ft</div>
+              </div>
+              <div>
+                <div class="breakdown-val">2</div>
+                <div class="breakdown-lbl">coats</div>
+              </div>
+              <div>
+                <div class="breakdown-val">350</div>
+                <div class="breakdown-lbl">sq ft/gal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shopping List -->
+          <div class="shopping-card s1-surf s1-bord">
+            <div class="shopping-title s1-acc">Shopping List — Walls</div>
+            <div class="shop-item s1-bord">
+              <div>
+                <div class="shop-name s1-text">Paint (1 gal)</div>
+                <div class="shop-sub s1-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s1-acc">3</div>
+            </div>
+            <div class="shop-item" style="border:none;">
+              <div>
+                <div class="shop-name s1-text">Paint (1 qt)</div>
+                <div class="shop-sub s1-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s1-acc">3</div>
+            </div>
+          </div>
+
+          <!-- Tip Bar -->
+          <div class="tip-bar s1-tip">
+            <div class="tip-text s1-mid">
+              <span class="s1-tip-strong" style="font-weight:500;">Pro tip:</span> A quart is perfect for small walls or accent coverage.
+            </div>
+          </div>
+
+          <!-- Spacer for tab bar -->
+          <div style="height:72px;flex-shrink:0;"></div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar s1-surf s1-bord" style="border-top-width:1px;border-top-style:solid;">
+          <div class="tab">
+            <div class="tab-icon s1-acc">🎨</div>
+            <div class="tab-label s1-acc">Paint</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s1-mid">⬜</div>
+            <div class="tab-label s1-mid">Tile</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s1-mid">🧱</div>
+            <div class="tab-label s1-mid">Grout</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s1-mid">📐</div>
+            <div class="tab-label s1-mid">LVP</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s1-mid">🏠</div>
+            <div class="tab-label s1-mid">More</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette -->
+    <div class="palette">
+      <div class="swatch" style="background:#0f0f0f;" title="#0f0f0f"></div>
+      <div class="swatch" style="background:#1a1a1a;" title="#1a1a1a"></div>
+      <div class="swatch" style="background:#2e2e2e;" title="#2e2e2e"></div>
+      <div class="swatch" style="background:#f5c842;" title="#f5c842"></div>
+      <div class="swatch" style="background:#f0ede8;" title="#f0ede8"></div>
+    </div>
+  </div>
+
+
+  <!-- ═══ SCHEME 2: Blueprint ═══ -->
+  <div class="scheme-col">
+    <div class="scheme-label">Option 1</div>
+    <div class="scheme-name">Blueprint</div>
+    <div class="phone">
+      <div class="phone-inner s2-bg">
+        <div class="screen s2-bg">
+          <!-- Notch -->
+          <div class="notch-bar s2-bg">
+            <div class="notch s2-notch"></div>
+          </div>
+
+          <!-- Header -->
+          <div class="app-header s2-bord" style="border-bottom-width:1px;border-bottom-style:solid;">
+            <div class="header-tag s2-acc">Buildout</div>
+            <div class="header-title s2-text">Paint</div>
+            <div class="header-sub s2-dim">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+
+          <!-- Section: Mode -->
+          <div class="section">
+            <div class="section-label s2-acc">Mode</div>
+            <div class="seg-control s2-surf s2-bord">
+              <div class="seg-btn s2-seg-active">Full Room</div>
+              <div class="seg-btn s2-mid">Manual Walls</div>
+            </div>
+          </div>
+
+          <!-- Section: Room Dimensions -->
+          <div class="section">
+            <div class="section-label s2-acc">Room Dimensions</div>
+            <div class="grid3">
+              <div class="input-block s2-surf s2-bord" style="border-color:#4d9fff;">
+                <div class="input-label s2-dim">Length</div>
+                <div class="input-val s2-text">12</div>
+                <div class="input-unit s2-dim">ft</div>
+              </div>
+              <div class="input-block s2-surf s2-bord">
+                <div class="input-label s2-dim">Width</div>
+                <div class="input-val s2-text">10</div>
+                <div class="input-unit s2-dim">ft</div>
+              </div>
+              <div class="input-block s2-surf s2-bord">
+                <div class="input-label s2-dim">Height</div>
+                <div class="input-val s2-text">9</div>
+                <div class="input-unit s2-dim">ft</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Openings -->
+          <div class="section">
+            <div class="section-label s2-acc">Openings</div>
+            <div class="toggle-row">
+              <div class="toggle-chip s2-surf s2-chip-active">
+                <div class="chip-box s2-chip-box-active">
+                  <span class="chip-check">✓</span>
+                </div>
+                <div class="chip-label s2-text" style="font-size:11px;">1 Door</div>
+              </div>
+              <div class="toggle-chip s2-surf s2-bord">
+                <div class="chip-box s2-bord" style="border-color:#1e2a3a;"></div>
+                <div class="chip-label s2-mid" style="font-size:11px;">Windows</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Coverage -->
+          <div class="section">
+            <div class="section-label s2-acc">Surface</div>
+            <div class="seg-control s2-surf s2-bord">
+              <div class="seg-btn s2-mid" style="font-size:10.5px;">Smooth</div>
+              <div class="seg-btn s2-seg-active" style="font-size:10.5px;">Semi-Rough</div>
+              <div class="seg-btn s2-mid" style="font-size:10.5px;">Textured</div>
+            </div>
+          </div>
+
+          <!-- Result Card -->
+          <div class="result-card s2-acc-bg">
+            <div class="result-tag">Total Paint Needed</div>
+            <div class="result-main">3.7 <span class="result-unit">gallons</span></div>
+            <div class="result-divider"></div>
+            <div class="result-breakdown">
+              <div>
+                <div class="breakdown-val">396</div>
+                <div class="breakdown-lbl">sq ft</div>
+              </div>
+              <div>
+                <div class="breakdown-val">2</div>
+                <div class="breakdown-lbl">coats</div>
+              </div>
+              <div>
+                <div class="breakdown-val">350</div>
+                <div class="breakdown-lbl">sq ft/gal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shopping List -->
+          <div class="shopping-card s2-surf s2-bord">
+            <div class="shopping-title s2-acc">Shopping List — Walls</div>
+            <div class="shop-item s2-bord">
+              <div>
+                <div class="shop-name s2-text">Paint (1 gal)</div>
+                <div class="shop-sub s2-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s2-acc">3</div>
+            </div>
+            <div class="shop-item" style="border:none;">
+              <div>
+                <div class="shop-name s2-text">Paint (1 qt)</div>
+                <div class="shop-sub s2-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s2-acc">3</div>
+            </div>
+          </div>
+
+          <!-- Tip Bar -->
+          <div class="tip-bar s2-tip">
+            <div class="tip-text s2-mid">
+              <span class="s2-tip-strong" style="font-weight:500;">Pro tip:</span> A quart is perfect for small walls or accent coverage.
+            </div>
+          </div>
+
+          <!-- Spacer for tab bar -->
+          <div style="height:72px;flex-shrink:0;"></div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar s2-surf s2-bord" style="border-top-width:1px;border-top-style:solid;">
+          <div class="tab">
+            <div class="tab-icon s2-acc">🎨</div>
+            <div class="tab-label s2-acc">Paint</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s2-mid">⬜</div>
+            <div class="tab-label s2-mid">Tile</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s2-mid">🧱</div>
+            <div class="tab-label s2-mid">Grout</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s2-mid">📐</div>
+            <div class="tab-label s2-mid">LVP</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s2-mid">🏠</div>
+            <div class="tab-label s2-mid">More</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette -->
+    <div class="palette">
+      <div class="swatch" style="background:#0a0d14;" title="#0a0d14"></div>
+      <div class="swatch" style="background:#131824;" title="#131824"></div>
+      <div class="swatch" style="background:#1e2a3a;" title="#1e2a3a"></div>
+      <div class="swatch" style="background:#4d9fff;" title="#4d9fff"></div>
+      <div class="swatch" style="background:#e8edf5;" title="#e8edf5"></div>
+    </div>
+  </div>
+
+
+  <!-- ═══ SCHEME 3: Ember ═══ -->
+  <div class="scheme-col">
+    <div class="scheme-label">Option 2</div>
+    <div class="scheme-name">Ember</div>
+    <div class="phone">
+      <div class="phone-inner s3-bg">
+        <div class="screen s3-bg">
+          <!-- Notch -->
+          <div class="notch-bar s3-bg">
+            <div class="notch s3-notch"></div>
+          </div>
+
+          <!-- Header -->
+          <div class="app-header s3-bord" style="border-bottom-width:1px;border-bottom-style:solid;">
+            <div class="header-tag s3-acc">Buildout</div>
+            <div class="header-title s3-text">Paint</div>
+            <div class="header-sub s3-dim">Calculate how much paint you need for walls, ceilings, and rooms.</div>
+          </div>
+
+          <!-- Section: Mode -->
+          <div class="section">
+            <div class="section-label s3-acc">Mode</div>
+            <div class="seg-control s3-surf s3-bord">
+              <div class="seg-btn s3-seg-active">Full Room</div>
+              <div class="seg-btn s3-mid">Manual Walls</div>
+            </div>
+          </div>
+
+          <!-- Section: Room Dimensions -->
+          <div class="section">
+            <div class="section-label s3-acc">Room Dimensions</div>
+            <div class="grid3">
+              <div class="input-block s3-surf s3-bord" style="border-color:#c97b3a;">
+                <div class="input-label s3-dim">Length</div>
+                <div class="input-val s3-text">12</div>
+                <div class="input-unit s3-dim">ft</div>
+              </div>
+              <div class="input-block s3-surf s3-bord">
+                <div class="input-label s3-dim">Width</div>
+                <div class="input-val s3-text">10</div>
+                <div class="input-unit s3-dim">ft</div>
+              </div>
+              <div class="input-block s3-surf s3-bord">
+                <div class="input-label s3-dim">Height</div>
+                <div class="input-val s3-text">9</div>
+                <div class="input-unit s3-dim">ft</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Openings -->
+          <div class="section">
+            <div class="section-label s3-acc">Openings</div>
+            <div class="toggle-row">
+              <div class="toggle-chip s3-surf s3-chip-active">
+                <div class="chip-box s3-chip-box-active">
+                  <span class="chip-check">✓</span>
+                </div>
+                <div class="chip-label s3-text" style="font-size:11px;">1 Door</div>
+              </div>
+              <div class="toggle-chip s3-surf s3-bord">
+                <div class="chip-box s3-bord" style="border-color:#2e2520;"></div>
+                <div class="chip-label s3-mid" style="font-size:11px;">Windows</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Coverage -->
+          <div class="section">
+            <div class="section-label s3-acc">Surface</div>
+            <div class="seg-control s3-surf s3-bord">
+              <div class="seg-btn s3-mid" style="font-size:10.5px;">Smooth</div>
+              <div class="seg-btn s3-seg-active" style="font-size:10.5px;">Semi-Rough</div>
+              <div class="seg-btn s3-mid" style="font-size:10.5px;">Textured</div>
+            </div>
+          </div>
+
+          <!-- Result Card -->
+          <div class="result-card s3-acc-bg">
+            <div class="result-tag">Total Paint Needed</div>
+            <div class="result-main">3.7 <span class="result-unit">gallons</span></div>
+            <div class="result-divider"></div>
+            <div class="result-breakdown">
+              <div>
+                <div class="breakdown-val">396</div>
+                <div class="breakdown-lbl">sq ft</div>
+              </div>
+              <div>
+                <div class="breakdown-val">2</div>
+                <div class="breakdown-lbl">coats</div>
+              </div>
+              <div>
+                <div class="breakdown-val">350</div>
+                <div class="breakdown-lbl">sq ft/gal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shopping List -->
+          <div class="shopping-card s3-surf s3-bord">
+            <div class="shopping-title s3-acc">Shopping List — Walls</div>
+            <div class="shop-item s3-bord">
+              <div>
+                <div class="shop-name s3-text">Paint (1 gal)</div>
+                <div class="shop-sub s3-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s3-acc">3</div>
+            </div>
+            <div class="shop-item" style="border:none;">
+              <div>
+                <div class="shop-name s3-text">Paint (1 qt)</div>
+                <div class="shop-sub s3-dim">walls · semi-rough</div>
+              </div>
+              <div class="shop-qty s3-acc">3</div>
+            </div>
+          </div>
+
+          <!-- Tip Bar -->
+          <div class="tip-bar s3-tip">
+            <div class="tip-text s3-mid">
+              <span class="s3-tip-strong" style="font-weight:500;">Pro tip:</span> A quart is perfect for small walls or accent coverage.
+            </div>
+          </div>
+
+          <!-- Spacer for tab bar -->
+          <div style="height:72px;flex-shrink:0;"></div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar s3-surf s3-bord" style="border-top-width:1px;border-top-style:solid;">
+          <div class="tab">
+            <div class="tab-icon s3-acc">🎨</div>
+            <div class="tab-label s3-acc">Paint</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s3-mid">⬜</div>
+            <div class="tab-label s3-mid">Tile</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s3-mid">🧱</div>
+            <div class="tab-label s3-mid">Grout</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s3-mid">📐</div>
+            <div class="tab-label s3-mid">LVP</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon s3-mid">🏠</div>
+            <div class="tab-label s3-mid">More</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette -->
+    <div class="palette">
+      <div class="swatch" style="background:#100d0a;" title="#100d0a"></div>
+      <div class="swatch" style="background:#1c1714;" title="#1c1714"></div>
+      <div class="swatch" style="background:#2e2520;" title="#2e2520"></div>
+      <div class="swatch" style="background:#c97b3a;" title="#c97b3a"></div>
+      <div class="swatch" style="background:#f0ebe4;" title="#f0ebe4"></div>
+    </div>
+  </div>
+
+</div><!-- /schemes -->
+
+</body>
+</html>

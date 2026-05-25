@@ -82,10 +82,10 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 - Wallpaper Calculator — rolls + pattern repeat logic
 - Underlayment Calculator — pairs with LVP and carpet screens
+- Deep link from calculator results → Quote builder (e.g. "Add to Quote" button pre-fills a line item)
 
 ### Future (separate apps)
 
-- Deep link from calculator results → Quote builder (e.g. "Add to Quote" button pre-fills a line item)
 - Electrical, plumbing, structural tools → separate niche apps under same developer account
 - Keep Buildout focused on surface/flooring/finish work, hard cap at 8 calculator tools
 

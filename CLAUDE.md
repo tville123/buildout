@@ -5,7 +5,7 @@
 
 ## Project Overview
 
-A mobile-first app for small contractors and DIYers built in React Native / Expo, targeting the iOS App Store. Buildout has two core sections: **Calculate** (material estimators for paint, tile, flooring, drywall, and more) and **Quote** (fast job quoting with PDF export). Free with ads; paid upgrade removes ads and unlocks PDF export. Previously named COAT (Paint Calculator); rebranded as Buildout with Paint as the first calculator screen.
+A mobile-first app for small contractors and DIYers built in React Native / Expo (TypeScript), targeting the iOS App Store. Buildout has two core sections: **Calculate** (material estimators for paint, tile, flooring, drywall, and more) and **Quote** (fast job quoting with PDF export). Free with ads; paid upgrade removes ads and unlocks PDF export. Previously named COAT (Paint Calculator); rebranded as Buildout with Paint as the first calculator screen.
 
 ---
 
@@ -15,30 +15,32 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 - Paint Calculator fully built (Full Room + Manual Walls modes)
 - All 7 V1 calculators built: Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall
-- Bottom tab navigation wired up (7 tabs, Ionicons, yellow active tint)
+- Bottom tab navigation: 7 flat tabs (Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall), Ionicons, yellow active tint
 - App rebranded to Buildout (`name`, `slug`, bundle ID all updated)
-- Shared components extracted: `ResultCard`, `ShoppingList`
-- Calculator math in `utils/calculator.js` for all tools
-- Monetization stubs in place: `ads/AdBanner.js`, `context/PaidContext.js`
-- Bundle compiles clean (verified via `npx expo export`)
+- Shared components extracted: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`
+- Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
+- Monetization stubs in place: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
+- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`
+- EAS build config in `eas.json` (development / preview / production profiles)
 
 ### Blocking ⚠️
 
+- [ ] Quote module not started — nav refactor + all Quote screens/components/utils needed (see roadmap)
+- [ ] Navigation refactor: current flat 7-tab bar → two-section layout (Calculate top-tabs | Quote stack)
+- [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
+- [ ] Wire up IAP (`expo-in-app-purchases` or RevenueCat) and replace PaidContext stub
 - [ ] Apple Developer Account pending ($99/yr) — [developer.apple.com](https://developer.apple.com)
 - [ ] App icon needs to be 1024×1024 PNG before App Store submission
 - [ ] Test on real device via TestFlight before submission
-- [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
-- [ ] Wire up IAP (`expo-in-app-purchases` or RevenueCat) and replace PaidContext stub
 - [ ] Privacy policy URL (hosted page, required by App Store)
-- [ ] Quoting module not yet started (see roadmap below)
 
 ### Next Immediate Tasks
 
 1. Run on iOS Simulator: `npx expo start --ios`
-1. Smoke test all 7 calculator tools
-1. Prepare 1024×1024 app icon asset
-1. Begin Quoting module — restructure nav into Calculate / Quote two-section layout
-1. Create App Store Connect record once Apple Developer Account is active
+2. Smoke test all 7 calculator tools
+3. Prepare 1024×1024 app icon asset
+4. Begin Quote module — restructure nav into Calculate / Quote two-section layout (see Navigation Structure below)
+5. Create App Store Connect record once Apple Developer Account is active
 
 ---
 
@@ -102,8 +104,8 @@ Ceiling area          = length × width (optional)
 Gallons needed        = (area × coats) / coverageRate
 Coverage rates        = smooth: 400, semi-rough: 350, textured: 300 sq ft/gal
 Shopping list         = floor(gallons) gal + ceil(remainder × 4) qt
-Door deduction        = 20 sq ft
-Window deduction      = 15 sq ft each
+Door deduction        = 20 sq ft  (or custom width × height if specified)
+Window deduction      = 15 sq ft each  (or custom width × height if specified)
 ```
 
 ### Tile Calculator
@@ -113,7 +115,7 @@ Room area      = length × width (sq ft)
 Tile area      = (tile width × tile height) / 144  (sq ft per tile)
 Tiles needed   = ceil(room area / tile area)
 With waste     = ceil(tiles needed × 1.10)  — always add 10% for cuts/breakage
-Boxes needed   = ceil(tiles needed / tiles per box)
+Boxes needed   = ceil(tiles with waste / tiles per box)
 ```
 
 ### LVP (Luxury Vinyl Plank) Calculator
@@ -167,57 +169,78 @@ Screws         = ceil(wall area / 500) lbs
 
 ## Navigation Structure
 
-Buildout uses a two-section top-level layout — not a flat tab bar.
+### Current State (implemented in App.tsx)
+
+7 flat bottom tabs — one per calculator tool.
 
 ```
-App.js (root)
+App.tsx (root)
+└── Bottom Tab Navigator (7 tabs)
+    ├── Paint      (PaintScreen.tsx)
+    ├── Tile       (TileScreen.tsx)
+    ├── Grout      (GroutScreen.tsx)
+    ├── LVP        (LVPScreen.tsx)
+    ├── Carpet     (CarpetScreen.tsx)
+    ├── Stairs     (StairsScreen.tsx)
+    └── Drywall    (DrywallScreen.tsx)
+```
+
+### Target State (planned — not yet implemented)
+
+Two-section bottom tab: Calculate (horizontal top tabs for tools) + Quote (stack navigator).
+
+```
+App.tsx (root)
 ├── Bottom Tab: Calculate
-│   └── Top Tabs (ScrollableTab or MaterialTopTabs)
-│       ├── Paint
-│       ├── Tile
-│       ├── Grout
-│       ├── LVP
-│       ├── Carpet
-│       ├── Stairs
-│       └── Drywall
+│   └── Material Top Tabs (scrollable, one tab per tool)
+│       ├── Paint      (screens/calculate/PaintScreen.tsx)
+│       ├── Tile       (screens/calculate/TileScreen.tsx)
+│       ├── Grout      (screens/calculate/GroutScreen.tsx)
+│       ├── LVP        (screens/calculate/LVPScreen.tsx)
+│       ├── Carpet     (screens/calculate/CarpetScreen.tsx)
+│       ├── Stairs     (screens/calculate/StairsScreen.tsx)
+│       └── Drywall    (screens/calculate/DrywallScreen.tsx)
 └── Bottom Tab: Quote
     └── Stack Navigator
         ├── QuoteHistoryScreen  (default — list of saved quotes)
         └── QuoteScreen         (new quote builder / edit existing)
 ```
 
-**Key decisions:**
+**Key design decisions for the target nav:**
 
 - Bottom tab has exactly 2 items: Calculate and Quote
 - Calculator tools scroll horizontally in a top tab bar — do not use a nested bottom tab for each tool
 - Quote section uses a stack so users can navigate back from a quote to the history list
 - Ads appear in Calculate section only (between results); Quote section is ad-free but PDF export is paywalled
+- Implementing this requires installing `@react-navigation/material-top-tabs` and `@react-navigation/stack`, then moving screen files into `screens/calculate/` and `screens/quote/` subdirectories
 
 ---
 
 ## Quoting Module
 
+> **Status: NOT YET STARTED.** The spec below is the implementation target.
+
 ### Data Model
 
-```javascript
-Quote {
-  id: string           // uuid
-  createdAt: timestamp
-  updatedAt: timestamp
-  clientName: string
-  jobDescription: string
-  lineItems: LineItem[]
-  taxRate: number      // percentage, e.g. 8.5
-  notes: string        // optional footer note on PDF
-  status: 'draft' | 'sent'
+```typescript
+interface Quote {
+  id: string;            // uuid
+  createdAt: number;     // timestamp
+  updatedAt: number;     // timestamp
+  clientName: string;
+  jobDescription: string;
+  lineItems: LineItem[];
+  taxRate: number;       // percentage, e.g. 8.5
+  notes: string;         // optional footer note on PDF
+  status: 'draft' | 'sent';
 }
 
-LineItem {
-  id: string
-  description: string
-  quantity: number
-  unitPrice: number    // USD
-  total: number        // quantity × unitPrice (derived)
+interface LineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;     // USD
+  total: number;         // quantity × unitPrice (derived)
 }
 ```
 
@@ -260,6 +283,8 @@ All tools share the same design system — do not deviate per screen.
 | Red (destructive) | `#e05c3a`            |
 | Max width         | 430px (mobile-first) |
 
+Design tokens are exported from `theme.ts` as the `C` object.
+
 **Fonts**
 
 - `Bebas Neue` — display headings, large result numbers
@@ -268,33 +293,58 @@ All tools share the same design system — do not deviate per screen.
 
 **UI Patterns** (consistent across all tools)
 
-- Section labels: `0.6rem`, `0.16em` letter-spacing, uppercase, yellow
-- Segmented controls: yellow active state, dark surface inactive
-- Input blocks: surface background, yellow border on focus
-- Results card: yellow background, large Bebas Neue number, breakdown grid
-- Shopping list card: dark surface, yellow quantities in Bebas Neue
-- Toggle chips: yellow border + subtle yellow fill when active
+- Section labels: uppercase, yellow, ~9.6px, 0.16em letter-spacing — use `<SectionLabel>`
+- Segmented controls: yellow active state, dark surface inactive — use `<SegControl>`
+- Input blocks: surface background, yellow border on focus — use `<InputBlock>`
+- Results card: yellow background, large Bebas Neue number, breakdown grid — use `<ResultCard>`
+- Shopping list card: dark surface, yellow quantities in Bebas Neue — use `<ShoppingList>`
+- Toggle chips: yellow border + subtle yellow fill when active — use `<ToggleChip>`
+- All screen headers follow the same pattern: tag chip → title (Bebas Neue) → subtitle
+
+**Screen UX Pattern** (all 7 calculators follow this exactly)
+
+1. Header — tag chip, title, subtitle
+2. Numbered input sections (01, 02, …) with `<SectionLabel>` headings
+3. `<ResultCard>` + `<ShoppingList>` — only rendered when inputs are valid (no zero/empty values)
+4. Pro tip bar at the bottom
+5. No-result state: emoji + instructional text when inputs are incomplete
 
 ---
 
 ## Tech Stack
 
+### Installed
+
 ```
-React Native + Expo (blank template)
+React 19.2.0 / React Native 0.83.4 / Expo ~55.0.15
+TypeScript ~5.9.2
 @expo-google-fonts/bebas-neue
 @expo-google-fonts/ibm-plex-sans
 @expo-google-fonts/ibm-plex-mono
-@react-navigation/bottom-tabs          ← two-section nav (Calculate + Quote)
-@react-navigation/material-top-tabs    ← scrollable calculator tool tabs
-@react-navigation/stack                ← Quote section stack navigator
+@react-navigation/bottom-tabs        ← current 7-tab flat nav
 @react-navigation/native
 react-native-screens
 react-native-safe-area-context
+@expo/vector-icons                   ← Ionicons for tab bar
+expo-font
+expo-status-bar
+```
+
+### To Install Before Quote Module
+
+```
+@react-navigation/material-top-tabs  ← scrollable tool tabs in Calculate section
+@react-navigation/stack              ← Quote section stack navigator
 @react-native-async-storage/async-storage  ← quote local storage
-expo-print                             ← HTML-to-PDF for quote export
-expo-sharing                           ← share PDF via share sheet
-expo-in-app-purchases                  ← add when implementing IAP
-react-native-google-mobile-ads         ← add when implementing ads
+expo-print                           ← HTML-to-PDF for quote export
+expo-sharing                         ← share PDF via share sheet
+```
+
+### To Install for Monetization
+
+```
+react-native-google-mobile-ads       ← add when implementing AdMob
+expo-in-app-purchases                ← add when implementing IAP (or use RevenueCat)
 ```
 
 State management: plain `useState` — no Redux or Zustand needed at this scale.
@@ -303,48 +353,76 @@ State management: plain `useState` — no Redux or Zustand needed at this scale.
 
 ## File Structure
 
+### Current (as built)
+
 ```
 buildout/
-├── App.js                         ← root + bottom tab navigator (Calculate | Quote)
-├── theme.js                       ← C (colors) + shared constants
-├── styles.js                      ← shared StyleSheet styles
-├── context/
-│   └── PaidContext.js             ← IAP paid state (stub in place)
-├── screens/
-│   ├── calculate/
-│   │   ├── PaintScreen.js
-│   │   ├── TileScreen.js
-│   │   ├── GroutScreen.js
-│   │   ├── LVPScreen.js
-│   │   ├── CarpetScreen.js
-│   │   ├── StairsScreen.js
-│   │   └── DrywallScreen.js
-│   └── quote/
-│       ├── QuoteHistoryScreen.js  ← list of saved quotes
-│       └── QuoteScreen.js         ← new quote builder / edit existing
-├── components/
-│   ├── SectionLabel.js
-│   ├── SegControl.js
-│   ├── InputBlock.js
-│   ├── ToggleChip.js
-│   ├── WallCard.js                ← Paint-specific
-│   ├── ResultCard.js              ← shared results display
-│   ├── ShoppingList.js            ← shared shopping list
-│   ├── LineItemRow.js             ← quote line item input row
-│   └── QuoteCard.js               ← quote summary card in history list
-├── utils/
-│   ├── calculator.js              ← toShoppingList, descBuy, all math helpers
-│   ├── quoteStorage.js            ← AsyncStorage CRUD for quotes
-│   └── pdfGenerator.js            ← HTML template + expo-print logic
-├── ads/
-│   └── AdBanner.js                ← wraps AdMob banner, renders null in paid mode
+├── App.tsx                        ← root + 7-tab bottom navigator
+├── index.ts                       ← Expo entry point (registerRootComponent)
+├── theme.ts                       ← C (color tokens) + WALL_NAMES constant
+├── styles.ts                      ← shared StyleSheet for all screens
+├── types.ts                       ← Wall, ShoppingListBuy, PaintResult interfaces
+├── tsconfig.json                  ← extends expo/tsconfig.base, strict mode
+├── eas.json                       ← EAS build profiles (dev / preview / production)
 ├── app.json                       ← bundle ID: com.drafthouse.buildout
+├── package.json
+├── context/
+│   └── PaidContext.tsx            ← IAP paid state stub (always returns false)
+├── screens/                       ← flat; no calculate/ or quote/ subdirs yet
+│   ├── PaintScreen.tsx
+│   ├── TileScreen.tsx
+│   ├── GroutScreen.tsx
+│   ├── LVPScreen.tsx
+│   ├── CarpetScreen.tsx
+│   ├── StairsScreen.tsx
+│   └── DrywallScreen.tsx
+├── components/
+│   ├── SectionLabel.tsx
+│   ├── SegControl.tsx
+│   ├── InputBlock.tsx
+│   ├── ToggleChip.tsx
+│   ├── WallCard.tsx               ← Paint-specific manual wall entry
+│   ├── ResultCard.tsx             ← shared results display
+│   └── ShoppingList.tsx           ← shared shopping list
+├── utils/
+│   └── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
+├── ads/
+│   └── AdBanner.tsx               ← AdMob stub (renders null)
 ├── assets/
 │   ├── icon.png                   ← MUST be 1024×1024 for App Store
-│   └── splash-icon.png
-├── package.json
+│   ├── adaptive-icon.png
+│   ├── splash-icon.png
+│   └── favicon.png
 ├── CLAUDE.md                      ← this file
 └── README.md
+```
+
+### Target (after Quote module + nav refactor)
+
+```
+buildout/
+├── App.tsx                        ← root + two-section bottom tab nav
+├── ...
+├── screens/
+│   ├── calculate/                 ← move all 7 *Screen.tsx files here
+│   │   ├── PaintScreen.tsx
+│   │   ├── TileScreen.tsx
+│   │   ├── GroutScreen.tsx
+│   │   ├── LVPScreen.tsx
+│   │   ├── CarpetScreen.tsx
+│   │   ├── StairsScreen.tsx
+│   │   └── DrywallScreen.tsx
+│   └── quote/                     ← new
+│       ├── QuoteHistoryScreen.tsx ← list of saved quotes
+│       └── QuoteScreen.tsx        ← new quote builder / edit existing
+├── components/
+│   ├── ...existing...
+│   ├── LineItemRow.tsx            ← quote line item input row (new)
+│   └── QuoteCard.tsx              ← quote summary card in history list (new)
+├── utils/
+│   ├── calculator.ts
+│   ├── quoteStorage.ts            ← AsyncStorage CRUD for quotes (new)
+│   └── pdfGenerator.ts            ← HTML template + expo-print logic (new)
 ```
 
 ---
@@ -379,11 +457,11 @@ buildout/
 ### Submission Steps
 
 1. `eas login`
-1. `eas build --platform ios --profile production`
-1. Create app record in App Store Connect
-1. Upload metadata, screenshots (min 2, max 5 — show at least 3 different tools + quote screen)
-1. `eas submit --platform ios`
-1. Monitor App Store Connect — review typically 24–48 hrs
+2. `eas build --platform ios --profile production`
+3. Create app record in App Store Connect
+4. Upload metadata, screenshots (min 2, max 5 — show at least 3 different tools + quote screen)
+5. `eas submit --platform ios`
+6. Monitor App Store Connect — review typically 24–48 hrs
 
 ### Post-Launch
 
@@ -400,6 +478,7 @@ buildout/
 npm install                                          # install deps
 npx expo start                                       # dev server
 npx expo start --ios                                 # iOS Simulator (macOS + Xcode)
+npx expo export                                      # verify bundle compiles clean
 eas build --platform ios --profile production        # App Store build
 eas submit --platform ios                            # submit to App Store Connect
 ```

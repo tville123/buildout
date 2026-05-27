@@ -9,6 +9,7 @@ import InputBlock from '../components/InputBlock';
 import ToggleChip from '../components/ToggleChip';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 export default function StairsScreen() {
   const [numStairs, setNumStairs] = useState('');
@@ -29,13 +30,8 @@ export default function StairsScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="Stairs" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>Staircase Calculator</Text>
-          <Text style={s.headerTitle}>Stairs<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Calculate carpet or flooring for your staircase with 15% waste for cuts.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Stair Count" />
           <View style={{ maxWidth: 180 }}>

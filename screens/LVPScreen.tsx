@@ -8,6 +8,7 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 export default function LVPScreen() {
   const [roomL, setRoomL] = useState('');
@@ -26,13 +27,8 @@ export default function LVPScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="LVP" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>LVP Calculator</Text>
-          <Text style={s.headerTitle}>LVP<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Luxury vinyl plank — get the exact box count with waste included.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
           <View style={s.grid2}>

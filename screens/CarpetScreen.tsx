@@ -8,6 +8,7 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 export default function CarpetScreen() {
   const [roomL, setRoomL] = useState('');
@@ -24,13 +25,8 @@ export default function CarpetScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="Carpet" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>Carpet Calculator</Text>
-          <Text style={s.headerTitle}>Carpet<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Get your square yardage with waste — the number you give the carpet store.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
           <View style={s.grid2}>

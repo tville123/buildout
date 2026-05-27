@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-25
+**Last Updated:** 2026-05-26
 **Active Branch:** main
 
 ## Project Overview
@@ -17,7 +17,9 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - All 7 V1 calculators built: Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall
 - Bottom tab navigation: 7 flat tabs (Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall), Ionicons, yellow active tint
 - App rebranded to Buildout (`name`, `slug`, bundle ID all updated)
-- Shared components extracted: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`
+- Shared components extracted: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`, `TopBar`
+- `TopBar` component added (`components/TopBar.tsx`) — used by all 7 calculator screens; renders the compact 52px header bar with tag label, optional back chevron, action icons (share/settings/more), and UPGRADE pill for free-tier users
+- `design-system/` directory added — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
 - Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
 - Monetization stubs in place: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
 - TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`
@@ -293,17 +295,17 @@ Design tokens are exported from `theme.ts` as the `C` object.
 
 **UI Patterns** (consistent across all tools)
 
+- Top bar: compact 52px header with yellow tracked tag, optional back chevron, action icons, UPGRADE pill — use `<TopBar>`
 - Section labels: uppercase, yellow, ~9.6px, 0.16em letter-spacing — use `<SectionLabel>`
 - Segmented controls: yellow active state, dark surface inactive — use `<SegControl>`
 - Input blocks: surface background, yellow border on focus — use `<InputBlock>`
 - Results card: yellow background, large Bebas Neue number, breakdown grid — use `<ResultCard>`
 - Shopping list card: dark surface, yellow quantities in Bebas Neue — use `<ShoppingList>`
 - Toggle chips: yellow border + subtle yellow fill when active — use `<ToggleChip>`
-- All screen headers follow the same pattern: tag chip → title (Bebas Neue) → subtitle
 
 **Screen UX Pattern** (all 7 calculators follow this exactly)
 
-1. Header — tag chip, title, subtitle
+1. `<TopBar tag="TOOL_NAME" />` — compact bar, no large title
 2. Numbered input sections (01, 02, …) with `<SectionLabel>` headings
 3. `<ResultCard>` + `<ShoppingList>` — only rendered when inputs are valid (no zero/empty values)
 4. Pro tip bar at the bottom
@@ -377,6 +379,7 @@ buildout/
 │   ├── StairsScreen.tsx
 │   └── DrywallScreen.tsx
 ├── components/
+│   ├── TopBar.tsx                 ← shared top bar (tag, back chevron, action icons, UPGRADE pill)
 │   ├── SectionLabel.tsx
 │   ├── SegControl.tsx
 │   ├── InputBlock.tsx
@@ -393,6 +396,16 @@ buildout/
 │   ├── adaptive-icon.png
 │   ├── splash-icon.png
 │   └── favicon.png
+├── design-system/                 ← canonical visual reference (brand, tokens, component HTML previews, mobile UI kit)
+│   ├── README.md                  ← brand guide + full design spec
+│   ├── SKILL.md                   ← agent entry point for design tasks
+│   ├── colors_and_type.css        ← all tokens as CSS variables
+│   ├── assets/                    ← logos, app icon, brand marks (SVG + PNG)
+│   ├── fonts/                     ← font notes (Google Fonts CDN; see fonts/README.md)
+│   ├── preview/                   ← one HTML file per component card
+│   └── ui_kits/mobile-app/        ← React (web) recreation of Paint/Tile/Drywall screens; click-through prototype
+├── docs/
+│   └── index.html
 ├── CLAUDE.md                      ← this file
 └── README.md
 ```
@@ -416,6 +429,7 @@ buildout/
 │       ├── QuoteHistoryScreen.tsx ← list of saved quotes
 │       └── QuoteScreen.tsx        ← new quote builder / edit existing
 ├── components/
+│   ├── TopBar.tsx                 ← existing; reused across Calculate + Quote screens
 │   ├── ...existing...
 │   ├── LineItemRow.tsx            ← quote line item input row (new)
 │   └── QuoteCard.tsx              ← quote summary card in history list (new)

@@ -1,0 +1,57 @@
+/* Shared base styles for design-system preview cards.
+   Each card is a 700×variable canvas. */
+@import url('../colors_and_type.css');
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  width: 700px;
+  background: var(--bo-bg);
+  color: var(--bo-text);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+.card {
+  width: 700px;
+  padding: 28px;
+  background: var(--bo-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.row { display: flex; gap: 12px; align-items: stretch; }
+.col { display: flex; flex-direction: column; gap: 6px; }
+.mono { font-family: var(--font-mono); }
+.dim { color: var(--bo-text-dim); }
+.mid { color: var(--bo-text-mid); }
+.yellow { color: var(--bo-yellow); }
+.section-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 9.6px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bo-yellow);
+}
+.token-name {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--bo-text);
+}
+.token-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--bo-text-dim);
+}
+.swatch {
+  flex: 1;
+  border-radius: 10px;
+  border: 1px solid var(--bo-border);
+  padding: 14px;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+}

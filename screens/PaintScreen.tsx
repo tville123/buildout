@@ -15,6 +15,7 @@ import ToggleChip from '../components/ToggleChip';
 import WallCard from '../components/WallCard';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 export default function PaintScreen() {
   const [mode, setMode] = useState<'room' | 'manual'>('room');
@@ -123,13 +124,8 @@ export default function PaintScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="Paint" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>Paint Calculator</Text>
-          <Text style={s.headerTitle}>Paint<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Get the exact paint you need — no guessing, no waste, no extra trips.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Mode" />
           <SegControl

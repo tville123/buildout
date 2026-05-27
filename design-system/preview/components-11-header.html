@@ -1,0 +1,189 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  .stage {
+    width: 320px;
+    background: #0f0f0f;
+    border: 1px solid #2e2e2e;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #2e2e2e;
+    background: #0f0f0f;
+  }
+  .topbar .tag {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #f5c842;
+  }
+  .topbar .left { display: flex; align-items: center; gap: 10px; }
+  .topbar .right { display: flex; align-items: center; gap: 4px; }
+  .iconbtn {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    color: #888;
+    background: transparent;
+    cursor: pointer;
+  }
+  .iconbtn:hover { color: #f0ede8; }
+  .iconbtn svg {
+    width: 19px; height: 19px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .pro-pill {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: #f5c842;
+    border: 1px solid #f5c842;
+    border-radius: 4px;
+    padding: 3px 6px 2px;
+    margin-right: 4px;
+  }
+  .back-arrow {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    color: #888;
+  }
+  .back-arrow svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .stage-body {
+    padding: 14px 16px 18px;
+    background: #0f0f0f;
+  }
+  .stage-body .small-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 9.6px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: #f5c842;
+    margin-bottom: 8px;
+  }
+  .stage-body .ghost-row {
+    height: 38px;
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  .stage-body .ghost-row.alt { background: transparent; border-style: dashed; }
+  .caption {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #555;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .three-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .notebar {
+    background: rgba(245,200,66,0.05);
+    border: 1px solid rgba(245,200,66,0.12);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 11.7px;
+    color: #888;
+    line-height: 1.55;
+  }
+  .notebar b { color: #f5c842; font-weight: 500; }
+</style>
+</head><body><div class="card">
+  <div class="section-label">Top bar — replaces the 52px header</div>
+
+  <div class="three-up">
+
+    <!-- Variant 1: Primary top bar -->
+    <div class="col" style="gap:0">
+      <div class="stage">
+        <div class="topbar">
+          <div class="left"><div class="tag">Paint</div></div>
+          <div class="right">
+            <div class="iconbtn" title="Share / export">
+              <svg viewBox="0 0 24 24"><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+            </div>
+            <div class="iconbtn" title="Settings">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="stage-body">
+          <div class="small-label">01 — Mode</div>
+          <div class="ghost-row"></div>
+          <div class="small-label" style="margin-top:14px">02 — Room Dimensions</div>
+          <div class="ghost-row"></div>
+          <div class="ghost-row alt"></div>
+        </div>
+      </div>
+      <div class="caption">default · screen tag + utilities</div>
+    </div>
+
+    <!-- Variant 2: Sub-screen back state -->
+    <div class="col" style="gap:0">
+      <div class="stage">
+        <div class="topbar">
+          <div class="left">
+            <div class="back-arrow"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></div>
+            <div class="tag">Saved Quote</div>
+          </div>
+          <div class="right">
+            <div class="iconbtn" title="More">
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="stage-body">
+          <div class="small-label">Quote #0142</div>
+          <div class="ghost-row"></div>
+          <div class="ghost-row"></div>
+          <div class="ghost-row"></div>
+        </div>
+      </div>
+      <div class="caption">sub-screen · back + contextual overflow</div>
+    </div>
+
+    <!-- Variant 3: Free user upgrade -->
+    <div class="col" style="gap:0">
+      <div class="stage">
+        <div class="topbar">
+          <div class="left"><div class="tag">Drywall</div></div>
+          <div class="right">
+            <div class="pro-pill">UPGRADE</div>
+            <div class="iconbtn" title="Settings">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.2 2.2M17.6 17.6l2.2 2.2M2 12h3M19 12h3M4.2 19.8 6.4 17.6M17.6 6.4 19.8 4.2"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="stage-body">
+          <div class="small-label">01 — Room Dimensions</div>
+          <div class="ghost-row"></div>
+          <div class="ghost-row"></div>
+          <div class="ghost-row"></div>
+        </div>
+      </div>
+      <div class="caption">free tier · room for "Upgrade" CTA</div>
+    </div>
+
+  </div>
+
+  <div class="notebar">
+    <b>Recommendation.</b> Drop the 52px Bebas title from every calculator screen. The compact top bar keeps the screen identifier (tracked yellow tag, same language as section labels) and reclaims ~100px for inputs and the result card. Right-side reserves grow naturally: <b>share/export</b> ships with PDF, <b>settings</b> next, <b>upgrade</b> when ads are present, contextual <b>···</b> on sub-screens like saved quotes.
+  </div>
+
+  <div class="token-meta">Bar height: 52px (incl. status bar offset). Icon buttons: 32×32 hit · 19px outline · color --text-mid → --text. Border-bottom: 1px solid #2e2e2e. No shadow, no fill.</div>
+</div></body></html>

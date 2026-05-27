@@ -8,6 +8,7 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 export default function DrywallScreen() {
   const [roomL, setRoomL] = useState('');
@@ -30,13 +31,8 @@ export default function DrywallScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="Drywall" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>Drywall Calculator</Text>
-          <Text style={s.headerTitle}>Drywall<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Sheets, joint compound, tape, and screws — everything for a complete drywall job.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Room Dimensions" />
           <View style={s.grid3}>

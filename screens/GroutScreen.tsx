@@ -9,6 +9,7 @@ import SegControl from '../components/SegControl';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
+import TopBar from '../components/TopBar';
 
 const JOINT_OPTIONS: Array<{ value: number; label: string }> = [
   { value: 0.125, label: '1/8"' },
@@ -36,13 +37,8 @@ export default function GroutScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TopBar tag="Grout" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <View style={s.header}>
-          <Text style={s.headerTag}>Grout Calculator</Text>
-          <Text style={s.headerTitle}>Grout<Text style={{ color: C.yellow }}>.</Text></Text>
-          <Text style={s.headerSub}>Calculate exactly how many bags of grout you need for any tile job.</Text>
-        </View>
-
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
           <View style={s.grid2}>

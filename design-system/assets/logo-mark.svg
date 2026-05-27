@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="22" fill="#0f0f0f"></rect>
+  
+  <rect x="22" y="22" width="14" height="76" fill="#f5c842"></rect>
+  <rect x="22" y="32" width="14" height="2" fill="#0f0f0f"></rect>
+  <rect x="22" y="44" width="10" height="2" fill="#0f0f0f"></rect>
+  <rect x="22" y="56" width="14" height="2" fill="#0f0f0f"></rect>
+  <rect x="22" y="68" width="10" height="2" fill="#0f0f0f"></rect>
+  <rect x="22" y="80" width="14" height="2" fill="#0f0f0f"></rect>
+  
+  <text x="46" y="62" font-family="Bebas Neue, Oswald, Impact, sans-serif" font-size="44" fill="#f0ede8" letter-spacing="0.04em">B</text>
+  <text x="46" y="98" font-family="Bebas Neue, Oswald, Impact, sans-serif" font-size="44" fill="#f5c842" letter-spacing="0.04em">O.</text>
+</svg>

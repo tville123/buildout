@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ComponentProps } from 'react';
 import { View, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -75,11 +75,6 @@ function QuoteNavigator() {
   );
 }
 
-function QuoteBadge() {
-  const { quotes } = useQuote();
-  return quotes.length > 0 ? quotes.length : undefined;
-}
-
 function MainTabs() {
   const { quotes } = useQuote();
   const quoteCount = quotes.length;
@@ -93,10 +88,10 @@ function MainTabs() {
         tabBarStyle: { backgroundColor: C.surface, borderTopColor: C.border },
         tabBarLabelStyle: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 10 },
         tabBarIcon: ({ color, size }) => {
-          const icon = route.name === 'Calculate'
+          const icon: ComponentProps<typeof Ionicons>['name'] = route.name === 'Calculate'
             ? 'calculator-outline'
             : 'document-text-outline';
-          return <Ionicons name={icon as any} size={size} color={color} />;
+          return <Ionicons name={icon} size={size} color={color} />;
         },
         tabBarBadge: route.name === 'Quote' && quoteCount > 0 ? quoteCount : undefined,
         tabBarBadgeStyle: { backgroundColor: C.yellow, color: '#000', fontFamily: 'IBMPlexSans_500Medium', fontSize: 10 },

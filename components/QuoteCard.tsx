@@ -1,10 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { C } from '../theme';
 import type { Quote } from '../types';
-
-function formatMoney(n: number): string {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
+import { formatMoney } from '../utils/format';
 
 function formatDate(iso: string): string {
   const d = new Date(iso);

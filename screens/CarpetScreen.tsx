@@ -71,7 +71,7 @@ export default function CarpetScreen({ onAddToQuote }: CalcScreenProps) {
             />
           )}
           <View style={s.tipBar}>
-            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Carpet is sold in 12-ft-wide rolls. For rooms wider than 12 ft, you'll need a seam — factor extra for pattern matching.</Text>
+            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>{"Carpet is sold in 12-ft-wide rolls. For rooms wider than 12 ft, you'll need a seam — factor extra for pattern matching."}</Text>
           </View>
         </> : <View style={s.noResult}>
           <Text style={s.noResultIcon}>🏠</Text>

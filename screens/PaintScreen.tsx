@@ -28,7 +28,7 @@ export default function PaintScreen({ onAddToQuote }: CalcScreenProps) {
   const [windowCount, setWindowCount] = useState('1');
   const [hasCeiling, setHasCeiling] = useState(false);
   const [walls, setWalls] = useState<Wall[]>([]);
-  const [wallCounter, setWallCounter] = useState(0);
+  const [, setWallCounter] = useState(0);
   const [coverageRate, setCoverageRate] = useState<number>(400);
   const [coats, setCoats] = useState<number>(2);
   const [priceWalls, setPriceWalls] = useState('');

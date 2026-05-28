@@ -7,14 +7,12 @@ import type { QuoteStackParamList } from '../App';
 import { useQuote } from '../context/QuoteContext';
 import TopBar from '../components/TopBar';
 import { C } from '../theme';
+import type { Quote } from '../types';
+import { formatMoney as money } from '../utils/format';
 
 type Props = NativeStackScreenProps<QuoteStackParamList, 'PDFPreview'>;
 
-function money(n: number): string {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function buildHTML(quote: ReturnType<typeof useQuote>['getQuote'] extends (id: string) => infer R ? NonNullable<R> : never): string {
+function buildHTML(quote: Quote): string {
   const subtotal = quote.lineItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
   const tax = subtotal * (quote.taxRate / 100);
   const grand = subtotal + tax;

@@ -14,16 +14,10 @@ import LineItemSheet from '../components/LineItemSheet';
 import PaywallSheet from '../components/PaywallSheet';
 import { C } from '../theme';
 import type { LineItem } from '../types';
+import { uuid } from '../utils/uuid';
+import { formatMoney as money } from '../utils/format';
 
 type Props = NativeStackScreenProps<QuoteStackParamList, 'QuoteBuilder'>;
-
-function uuid(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
-
-function money(n: number): string {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 export default function QuoteBuilderScreen({ navigation, route }: Props) {
   const { quoteId } = route.params;

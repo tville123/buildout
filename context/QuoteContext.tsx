@@ -2,12 +2,9 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Quote, LineItem } from '../types';
+import { uuid } from '../utils/uuid';
 
 const STORAGE_KEY = 'buildout.quotes';
-
-function uuid(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
 
 interface AddToQuotePayload {
   source: string;
@@ -40,7 +37,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then(raw => {
       if (raw) {
-        try { setQuotes(JSON.parse(raw)); } catch {}
+        try { setQuotes(JSON.parse(raw)); } catch (e) { console.error('[QuoteContext] Failed to parse stored quotes', e); }
       }
     });
   }, []);
@@ -83,8 +80,8 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     const now = new Date().toISOString();
 
     // Find or create the active draft
-    let targetId = activeQuoteId;
-    let existing = targetId ? quotes.find(q => q.id === targetId) : null;
+    const targetId = activeQuoteId;
+    const existing = targetId ? quotes.find(q => q.id === targetId) : null;
 
     if (!existing || existing.status !== 'draft') {
       const draft: Quote = {

@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../theme';
 import { usePaid } from '../context/PaidContext';
 
@@ -21,8 +22,9 @@ const ICON_NAME: Record<ActionName, React.ComponentProps<typeof Ionicons>['name'
 
 export default function TopBar({ tag, onBack, onTagPress, actions = ['share', 'settings'], onActionPress }: TopBarProps) {
   const isPaid = usePaid();
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, { paddingTop: insets.top + 14 }]}>
       <View style={styles.left}>
         {onBack ? (
           <TouchableOpacity onPress={onBack} style={styles.iconBtn} activeOpacity={0.7}>
@@ -57,7 +59,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? 68 : 44,
     paddingBottom: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,

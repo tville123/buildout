@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import type { ComponentType } from 'react';
+import { View, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CalculateStackParamList } from '../App';
 import type { ToolName } from '../types';
 import { useQuote } from '../context/QuoteContext';
 import { navigateToSettings } from '../navigationRef';
+import { C } from '../theme';
 import TopBar from '../components/TopBar';
 import ToolSwitcherSheet from '../components/ToolSwitcherSheet';
 
@@ -18,7 +20,11 @@ import DrywallScreen from './DrywallScreen';
 
 type Props = NativeStackScreenProps<CalculateStackParamList, 'Calculator'>;
 
-const SCREENS: Record<ToolName, React.ComponentType<CalcScreenProps>> = {
+export interface CalcScreenProps {
+  onAddToQuote?: (payload: { source: string; items: Array<{ description: string; quantity: number; unitPrice: number; source?: string }> }) => void;
+}
+
+const SCREENS: Record<ToolName, ComponentType<CalcScreenProps>> = {
   Paint: PaintScreen,
   Tile: TileScreen,
   Grout: GroutScreen,
@@ -28,18 +34,10 @@ const SCREENS: Record<ToolName, React.ComponentType<CalcScreenProps>> = {
   Drywall: DrywallScreen,
 };
 
-export interface CalcScreenProps {
-  onAddToQuote?: (payload: { source: string; items: Array<{ description: string; quantity: number; unitPrice: number; source?: string }> }) => void;
-}
-
 export default function CalculatorScreen({ route }: Props) {
   const [tool, setTool] = useState<ToolName>(route.params?.tool ?? 'Paint');
   const [showSwitcher, setShowSwitcher] = useState(false);
   const { addToQuote } = useQuote();
-
-  const handleAddToQuote = useCallback((payload: { source: string; items: Array<{ description: string; quantity: number; unitPrice: number; source?: string }> }) => {
-    addToQuote(payload);
-  }, [addToQuote]);
 
   const CalcComponent = SCREENS[tool];
 
@@ -53,7 +51,7 @@ export default function CalculatorScreen({ route }: Props) {
           if (action === 'settings') navigateToSettings();
         }}
       />
-      <CalcComponent onAddToQuote={handleAddToQuote} />
+      <CalcComponent onAddToQuote={addToQuote} />
       <ToolSwitcherSheet
         visible={showSwitcher}
         active={tool}
@@ -67,6 +65,6 @@ export default function CalculatorScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f0f',
+    backgroundColor: C.bg,
   },
 });

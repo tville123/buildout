@@ -96,7 +96,7 @@ export default function GroutScreen({ onAddToQuote }: CalcScreenProps) {
             />
           )}
           <View style={s.tipBar}>
-            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Use sanded grout for joints wider than 1/8". Unsanded grout for 1/16"–1/8" joints or polished tile.</Text>
+            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>{'Use sanded grout for joints wider than 1/8". Unsanded grout for 1/16"–1/8" joints or polished tile.'}</Text>
           </View>
         </> : <View style={s.noResult}>
           <Text style={s.noResultIcon}>🪨</Text>

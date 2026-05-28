@@ -40,4 +40,6 @@ yarn-error.*
 /ios
 /android
 
+.vscode
+.vscode/settings.json
 coat.code-workspace

@@ -25,8 +25,8 @@ export default function DrywallScreen({ onAddToQuote }: CalcScreenProps) {
     if (!l || !w || !h) return null;
     return calcDrywall({
       roomL: l, roomW: w, roomH: h,
-      doorCount: parseInt(doorCount) || 0,
-      windowCount: parseInt(windowCount) || 0,
+      doorCount: Math.max(0, parseInt(doorCount) || 0),
+      windowCount: Math.max(0, parseInt(windowCount) || 0),
     });
   })();
 

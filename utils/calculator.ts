@@ -1,6 +1,7 @@
 import type { ShoppingListBuy } from '../types';
 
 export function toShoppingList(gallonsRaw: number): ShoppingListBuy {
+  gallonsRaw = Math.max(0, gallonsRaw);
   const gallons = Math.floor(gallonsRaw);
   const quarts = Math.ceil((gallonsRaw - gallons) * 4);
   if (quarts >= 4) return { gallons: gallons + 1, quarts: 0 };

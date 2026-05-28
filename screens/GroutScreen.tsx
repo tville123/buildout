@@ -31,8 +31,8 @@ export default function GroutScreen({ onAddToQuote }: CalcScreenProps) {
     const w = parseFloat(roomW) || 0;
     const tw = parseFloat(tileW) || 0;
     const th = parseFloat(tileH) || 0;
-    const bw = parseFloat(bagWeight) || 25;
-    if (!l || !w || !tw || !th) return null;
+    const bw = Math.max(1, parseFloat(bagWeight) || 25);
+    if (l <= 0 || w <= 0 || tw <= 0 || th <= 0) return null;
     return calcGrout({ roomL: l, roomW: w, tileW: tw, tileH: th, jointWidth, bagWeight: bw });
   })();
 

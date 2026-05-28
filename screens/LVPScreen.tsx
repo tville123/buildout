@@ -22,7 +22,7 @@ export default function LVPScreen({ onAddToQuote }: CalcScreenProps) {
     const w = parseFloat(roomW) || 0;
     const spb = parseFloat(sqftPerBox) || 0;
     const ppb = parseFloat(pricePerBox) || 0;
-    if (!l || !w || !spb) return null;
+    if (l <= 0 || w <= 0 || spb <= 0) return null;
     return calcLVP({ roomL: l, roomW: w, sqftPerBox: spb, pricePerBox: ppb || null });
   })();
 

@@ -24,7 +24,7 @@ export default function TileScreen({ onAddToQuote }: CalcScreenProps) {
     const tw = parseFloat(tileW) || 0;
     const th = parseFloat(tileH) || 0;
     const tpb = parseFloat(tilesPerBox) || 0;
-    if (!l || !w || !tw || !th || !tpb) return null;
+    if (l <= 0 || w <= 0 || tw <= 0 || th <= 0 || tpb <= 0) return null;
     return calcTile({ roomL: l, roomW: w, tileW: tw, tileH: th, tilesPerBox: tpb });
   })();
 

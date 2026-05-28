@@ -8,9 +8,10 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function LVPScreen() {
+export default function LVPScreen({ onAddToQuote }: CalcScreenProps) {
   const [roomL, setRoomL] = useState('');
   const [roomW, setRoomW] = useState('');
   const [sqftPerBox, setSqftPerBox] = useState('');
@@ -27,7 +28,6 @@ export default function LVPScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="LVP" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
@@ -71,6 +71,14 @@ export default function LVPScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'LVP Calc',
+                items: [{ description: `LVP flooring — ${result.areaWithWaste.toFixed(0)} sq ft`, quantity: result.boxesNeeded, unitPrice: parseFloat(pricePerBox) || 48, source: 'LVP Calc' }],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Buy all boxes from the same dye lot. Store planks in the room 48 hrs before install to acclimate.</Text>
           </View>

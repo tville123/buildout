@@ -8,9 +8,10 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function DrywallScreen() {
+export default function DrywallScreen({ onAddToQuote }: CalcScreenProps) {
   const [roomL, setRoomL] = useState('');
   const [roomW, setRoomW] = useState('');
   const [roomH, setRoomH] = useState('');
@@ -31,7 +32,6 @@ export default function DrywallScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Drywall" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Room Dimensions" />
@@ -85,6 +85,17 @@ export default function DrywallScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Drywall Calc',
+                items: [
+                  { description: `Drywall sheets (4×8) — ${result.wallArea.toFixed(0)} sq ft`, quantity: result.sheetsNeeded, unitPrice: 14, source: 'Drywall Calc' },
+                  { description: 'Joint compound + tape + screws', quantity: 1, unitPrice: 85, source: 'Drywall Calc' },
+                ],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Hang sheets perpendicular to studs and stagger seams. Butt joints (short edges) are harder to finish — minimize them.</Text>
           </View>

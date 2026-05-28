@@ -9,9 +9,10 @@ import InputBlock from '../components/InputBlock';
 import ToggleChip from '../components/ToggleChip';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function StairsScreen() {
+export default function StairsScreen({ onAddToQuote }: CalcScreenProps) {
   const [numStairs, setNumStairs] = useState('');
   const [treadDepth, setTreadDepth] = useState('');
   const [riserHeight, setRiserHeight] = useState('');
@@ -30,7 +31,6 @@ export default function StairsScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Stairs" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Stair Count" />
@@ -75,6 +75,14 @@ export default function StairsScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Stairs Calc',
+                items: [{ description: `Stair carpet — ${numStairs} stairs`, quantity: Math.ceil(result.areaWithWaste / 9), unitPrice: 22, source: 'Stairs Calc' }],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Stairs have more cuts and angles than flat floors. The 15% waste buffer covers typical pattern matching and angled cuts.</Text>
           </View>

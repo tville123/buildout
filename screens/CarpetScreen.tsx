@@ -8,9 +8,10 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function CarpetScreen() {
+export default function CarpetScreen({ onAddToQuote }: CalcScreenProps) {
   const [roomL, setRoomL] = useState('');
   const [roomW, setRoomW] = useState('');
   const [pricePerSqYard, setPricePerSqYard] = useState('');
@@ -25,7 +26,6 @@ export default function CarpetScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Carpet" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
@@ -62,8 +62,16 @@ export default function CarpetScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Carpet Calc',
+                items: [{ description: `Carpet — ${result.sqYardsWithWaste.toFixed(1)} yd²`, quantity: Math.ceil(result.sqYardsWithWaste), unitPrice: parseFloat(pricePerSqYard) || 18, source: 'Carpet Calc' }],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
-            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Carpet is sold in 12-ft-wide rolls. For rooms wider than 12 ft, you'll need a seam — factor extra for pattern matching.</Text>
+            <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>{"Carpet is sold in 12-ft-wide rolls. For rooms wider than 12 ft, you'll need a seam — factor extra for pattern matching."}</Text>
           </View>
         </> : <View style={s.noResult}>
           <Text style={s.noResultIcon}>🏠</Text>

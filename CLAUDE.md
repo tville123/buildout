@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-05-28
 **Active Branch:** main
 
 ## Project Overview
@@ -15,23 +15,24 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 - Paint Calculator fully built (Full Room + Manual Walls modes)
 - All 7 V1 calculators built: Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall
-- Bottom tab navigation: 7 flat tabs (Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall), Ionicons, yellow active tint
 - App rebranded to Buildout (`name`, `slug`, bundle ID all updated)
-- Shared components extracted: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`, `TopBar`
-- `TopBar` component added (`components/TopBar.tsx`) — used by all 7 calculator screens; renders the compact 52px header bar with tag label, optional back chevron, action icons (share/settings/more), and UPGRADE pill for free-tier users
-- `design-system/` directory added — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
+- All 7 V1 calculators built: Paint, Tile, Grout, LVP, Carpet, Stairs, Drywall
+- Shared components: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`, `TopBar`
+- `design-system/` directory — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
 - Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
-- Monetization stubs in place: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
-- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`
+- Monetization stubs: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
+- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`, `Quote`, `LineItem`, `ToolName`
 - EAS build config in `eas.json` (development / preview / production profiles)
+- **Nav refactor + Quote module complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), `CalculatorScreen` wraps all 7 tools via `ToolSwitcherSheet` modal, Quote stack (history → builder → PDF preview), `AddToQuoteCTA` on all calc screens, onboarding flow, settings screen, `PaywallSheet` — see nav graph below
+- `QuoteContext.tsx` — AsyncStorage-backed CRUD for quotes (storage key: `buildout.quotes`)
+- `navigationRef.ts` — global nav ref for imperative navigation (e.g. Settings modal from deep within calc screens)
 
 ### Blocking ⚠️
 
-- [ ] Quote module not started — nav refactor + all Quote screens/components/utils needed (see roadmap)
-- [ ] Navigation refactor: current flat 7-tab bar → two-section layout (Calculate top-tabs | Quote stack)
+- [x] Quote module + nav refactor — COMPLETE (2026-05-27) — see file list below
 - [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
 - [ ] Wire up IAP (`expo-in-app-purchases` or RevenueCat) and replace PaidContext stub
-- [ ] Apple Developer Account pending ($99/yr) — [developer.apple.com](https://developer.apple.com)
+- [x] Apple Developer Account active — App Store Connect: Manuel Villalobos | 1415684764
 - [ ] App icon needs to be 1024×1024 PNG before App Store submission
 - [ ] Test on real device via TestFlight before submission
 - [ ] Privacy policy URL (hosted page, required by App Store)
@@ -39,10 +40,10 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 ### Next Immediate Tasks
 
 1. Run on iOS Simulator: `npx expo start --ios`
-2. Smoke test all 7 calculator tools
+2. Smoke test all 7 calculator tools + Quote flow end-to-end
 3. Prepare 1024×1024 app icon asset
-4. Begin Quote module — restructure nav into Calculate / Quote two-section layout (see Navigation Structure below)
-5. Create App Store Connect record once Apple Developer Account is active
+4. Create app record in App Store Connect (account is active)
+5. Wire up AdMob + IAP
 
 ---
 
@@ -74,13 +75,13 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 **Quote Section**
 
-| # | Feature                 | Status          | Notes                                         |
-|---|-------------------------|-----------------|-----------------------------------------------|
-| 1 | New Quote builder       | 🔲 Not started  | Client name, job description, line items      |
-| 2 | Line item entry         | 🔲 Not started  | Description, quantity, unit price, auto-total |
-| 3 | Tax + total calculation | 🔲 Not started  | Optional tax rate input                       |
-| 4 | PDF export              | 🔲 Not started  | Paid feature — `expo-print` HTML-to-PDF       |
-| 5 | Quote history           | 🔲 Not started  | Saved quotes list, tap to reopen or duplicate |
+| # | Feature                 | Status   | Notes                                              |
+|---|-------------------------|----------|----------------------------------------------------|
+| 1 | New Quote builder       | ✓ Built  | `QuoteBuilderScreen.tsx` — client, desc, line items |
+| 2 | Line item entry         | ✓ Built  | `LineItemSheet.tsx` — description, qty, unit price  |
+| 3 | Tax + total calculation | ✓ Built  | Optional tax rate in QuoteBuilderScreen             |
+| 4 | PDF export              | ✓ Built  | `PDFPreviewScreen.tsx` — paywalled, `expo-print`    |
+| 5 | Quote history           | ✓ Built  | `QuoteHistoryScreen.tsx` — saved quotes list        |
 
 ### V1.1 — Post-Launch Updates
 
@@ -173,54 +174,33 @@ Screws         = ceil(wall area / 500) lbs
 
 ### Current State (implemented in App.tsx)
 
-7 flat bottom tabs — one per calculator tool.
+2-tab bottom nav. Calculate tab uses a single `CalculatorScreen` that renders whichever tool is active; tool switching is via `ToolSwitcherSheet` modal (not material-top-tabs). Quote tab is a native stack. Settings is a modal on the root stack.
 
 ```
-App.tsx (root)
-└── Bottom Tab Navigator (7 tabs)
-    ├── Paint      (PaintScreen.tsx)
-    ├── Tile       (TileScreen.tsx)
-    ├── Grout      (GroutScreen.tsx)
-    ├── LVP        (LVPScreen.tsx)
-    ├── Carpet     (CarpetScreen.tsx)
-    ├── Stairs     (StairsScreen.tsx)
-    └── Drywall    (DrywallScreen.tsx)
+App.tsx (RootStack)
+├── Main (bottom tabs)
+│   ├── Calculate (CalcStack)
+│   │   └── Calculator  (CalculatorScreen.tsx — hosts all 7 tools, ToolSwitcherSheet)
+│   └── Quote (QuoteStack)
+│       ├── QuoteHistory   (QuoteHistoryScreen.tsx)
+│       ├── QuoteBuilder   (QuoteBuilderScreen.tsx)
+│       └── PDFPreview     (PDFPreviewScreen.tsx)
+└── Settings (modal)       (SettingsScreen.tsx)
 ```
 
-### Target State (planned — not yet implemented)
+**Key design notes:**
 
-Two-section bottom tab: Calculate (horizontal top tabs for tools) + Quote (stack navigator).
-
-```
-App.tsx (root)
-├── Bottom Tab: Calculate
-│   └── Material Top Tabs (scrollable, one tab per tool)
-│       ├── Paint      (screens/calculate/PaintScreen.tsx)
-│       ├── Tile       (screens/calculate/TileScreen.tsx)
-│       ├── Grout      (screens/calculate/GroutScreen.tsx)
-│       ├── LVP        (screens/calculate/LVPScreen.tsx)
-│       ├── Carpet     (screens/calculate/CarpetScreen.tsx)
-│       ├── Stairs     (screens/calculate/StairsScreen.tsx)
-│       └── Drywall    (screens/calculate/DrywallScreen.tsx)
-└── Bottom Tab: Quote
-    └── Stack Navigator
-        ├── QuoteHistoryScreen  (default — list of saved quotes)
-        └── QuoteScreen         (new quote builder / edit existing)
-```
-
-**Key design decisions for the target nav:**
-
-- Bottom tab has exactly 2 items: Calculate and Quote
-- Calculator tools scroll horizontally in a top tab bar — do not use a nested bottom tab for each tool
-- Quote section uses a stack so users can navigate back from a quote to the history list
-- Ads appear in Calculate section only (between results); Quote section is ad-free but PDF export is paywalled
-- Implementing this requires installing `@react-navigation/material-top-tabs` and `@react-navigation/stack`, then moving screen files into `screens/calculate/` and `screens/quote/` subdirectories
+- Tool switching inside Calculate uses `ToolSwitcherSheet` bottom sheet, not a tab bar — avoids `@react-navigation/material-top-tabs` dependency
+- `ToolName` (`types.ts`) drives which screen `CalculatorScreen` renders via a `Record<ToolName, ComponentType>` map
+- `navigationRef.ts` provides a global nav ref so calc screens can open Settings without prop drilling
+- `QuoteContext.tsx` provides quote CRUD to all screens; persists to AsyncStorage (`buildout.quotes`)
+- `OnboardingScreen` is rendered outside the nav tree until `buildout.hasOnboarded` is set
 
 ---
 
 ## Quoting Module
 
-> **Status: NOT YET STARTED.** The spec below is the implementation target.
+> **Status: COMPLETE** (2026-05-27). Spec below reflects the implemented design.
 
 ### Data Model
 
@@ -265,7 +245,7 @@ Grand total      = subtotal + tax amount
 ### Storage
 
 - Quotes stored locally with `AsyncStorage` — no backend, no account required
-- Key format: `quotes:list` → array of Quote objects
+- Key format: `buildout.quotes` → array of Quote objects (managed by `context/QuoteContext.tsx`)
 
 ---
 
@@ -323,21 +303,15 @@ TypeScript ~5.9.2
 @expo-google-fonts/bebas-neue
 @expo-google-fonts/ibm-plex-sans
 @expo-google-fonts/ibm-plex-mono
-@react-navigation/bottom-tabs        ← current 7-tab flat nav
+@react-navigation/bottom-tabs        ← 2-tab bottom nav (Calculate + Quote)
 @react-navigation/native
+@react-navigation/native-stack       ← calc stack + quote stack + root modal
 react-native-screens
 react-native-safe-area-context
 @expo/vector-icons                   ← Ionicons for tab bar
+@react-native-async-storage/async-storage  ← quote local storage
 expo-font
 expo-status-bar
-```
-
-### To Install Before Quote Module
-
-```
-@react-navigation/material-top-tabs  ← scrollable tool tabs in Calculate section
-@react-navigation/stack              ← Quote section stack navigator
-@react-native-async-storage/async-storage  ← quote local storage
 expo-print                           ← HTML-to-PDF for quote export
 expo-sharing                         ← share PDF via share sheet
 ```
@@ -355,38 +329,49 @@ State management: plain `useState` — no Redux or Zustand needed at this scale.
 
 ## File Structure
 
-### Current (as built)
-
 ```
 buildout/
-├── App.tsx                        ← root + 7-tab bottom navigator
+├── App.tsx                        ← root: RootStack → MainTabs → CalcStack / QuoteStack
+├── navigationRef.ts               ← global nav ref + navigateToSettings()
 ├── index.ts                       ← Expo entry point (registerRootComponent)
 ├── theme.ts                       ← C (color tokens) + WALL_NAMES constant
 ├── styles.ts                      ← shared StyleSheet for all screens
-├── types.ts                       ← Wall, ShoppingListBuy, PaintResult interfaces
+├── types.ts                       ← Wall, ShoppingListBuy, PaintResult, Quote, LineItem, ToolName
 ├── tsconfig.json                  ← extends expo/tsconfig.base, strict mode
 ├── eas.json                       ← EAS build profiles (dev / preview / production)
 ├── app.json                       ← bundle ID: com.drafthouse.buildout
 ├── package.json
 ├── context/
-│   └── PaidContext.tsx            ← IAP paid state stub (always returns false)
-├── screens/                       ← flat; no calculate/ or quote/ subdirs yet
+│   ├── PaidContext.tsx            ← IAP paid state stub (always returns false)
+│   └── QuoteContext.tsx           ← AsyncStorage-backed quote CRUD; storage key: buildout.quotes
+├── screens/                       ← flat (no calculate/ or quote/ subdirs)
+│   ├── CalculatorScreen.tsx       ← hosts all 7 tool screens + ToolSwitcherSheet
 │   ├── PaintScreen.tsx
 │   ├── TileScreen.tsx
 │   ├── GroutScreen.tsx
 │   ├── LVPScreen.tsx
 │   ├── CarpetScreen.tsx
 │   ├── StairsScreen.tsx
-│   └── DrywallScreen.tsx
+│   ├── DrywallScreen.tsx
+│   ├── QuoteHistoryScreen.tsx     ← list of saved quotes
+│   ├── QuoteBuilderScreen.tsx     ← new/edit quote, line items, tax, totals
+│   ├── PDFPreviewScreen.tsx       ← HTML-to-PDF preview + share; paywalled
+│   ├── SettingsScreen.tsx         ← app settings modal
+│   └── OnboardingScreen.tsx       ← shown on first launch (outside nav tree)
 ├── components/
-│   ├── TopBar.tsx                 ← shared top bar (tag, back chevron, action icons, UPGRADE pill)
+│   ├── TopBar.tsx                 ← shared 52px header (tag, back chevron, action icons, UPGRADE pill)
 │   ├── SectionLabel.tsx
 │   ├── SegControl.tsx
 │   ├── InputBlock.tsx
 │   ├── ToggleChip.tsx
 │   ├── WallCard.tsx               ← Paint-specific manual wall entry
 │   ├── ResultCard.tsx             ← shared results display
-│   └── ShoppingList.tsx           ← shared shopping list
+│   ├── ShoppingList.tsx           ← shared shopping list
+│   ├── AddToQuoteCTA.tsx          ← "Add to Quote" button shown on all calc screens
+│   ├── LineItemSheet.tsx          ← bottom sheet for adding/editing a line item
+│   ├── PaywallSheet.tsx           ← upgrade prompt modal
+│   ├── QuoteCard.tsx              ← quote summary row in history list
+│   └── ToolSwitcherSheet.tsx      ← bottom sheet for switching between the 7 calc tools
 ├── utils/
 │   └── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
 ├── ads/
@@ -410,35 +395,6 @@ buildout/
 └── README.md
 ```
 
-### Target (after Quote module + nav refactor)
-
-```
-buildout/
-├── App.tsx                        ← root + two-section bottom tab nav
-├── ...
-├── screens/
-│   ├── calculate/                 ← move all 7 *Screen.tsx files here
-│   │   ├── PaintScreen.tsx
-│   │   ├── TileScreen.tsx
-│   │   ├── GroutScreen.tsx
-│   │   ├── LVPScreen.tsx
-│   │   ├── CarpetScreen.tsx
-│   │   ├── StairsScreen.tsx
-│   │   └── DrywallScreen.tsx
-│   └── quote/                     ← new
-│       ├── QuoteHistoryScreen.tsx ← list of saved quotes
-│       └── QuoteScreen.tsx        ← new quote builder / edit existing
-├── components/
-│   ├── TopBar.tsx                 ← existing; reused across Calculate + Quote screens
-│   ├── ...existing...
-│   ├── LineItemRow.tsx            ← quote line item input row (new)
-│   └── QuoteCard.tsx              ← quote summary card in history list (new)
-├── utils/
-│   ├── calculator.ts
-│   ├── quoteStorage.ts            ← AsyncStorage CRUD for quotes (new)
-│   └── pdfGenerator.ts            ← HTML template + expo-print logic (new)
-```
-
 ---
 
 ## App Store Details
@@ -458,10 +414,10 @@ buildout/
 
 ### Pre-Submission
 
-- [ ] Apple Developer Account active
+- [x] Apple Developer Account active
 - [ ] All 7 calculator tools smoke tested on device
-- [ ] Quoting module complete (new quote, line items, tax, history)
-- [ ] PDF export working and paywalled correctly
+- [x] Quoting module complete (new quote, line items, tax, history)
+- [x] PDF export built and paywalled (smoke test on device still needed)
 - [ ] AdMob wired up and replace AdBanner stub
 - [ ] IAP wired up and replace PaidContext stub
 - [ ] App icon 1024×1024 PNG in `assets/`
@@ -492,7 +448,12 @@ buildout/
 npm install                                          # install deps
 npx expo start                                       # dev server
 npx expo start --ios                                 # iOS Simulator (macOS + Xcode)
+npx expo run:ios                                     # full native rebuild + install (required after asset/config changes)
 npx expo export                                      # verify bundle compiles clean
 eas build --platform ios --profile production        # App Store build
 eas submit --platform ios                            # submit to App Store Connect
 ```
+
+> **Always use `npx expo install <package>` — never `npm install` — for Expo packages.**
+> `npm install` grabs the latest version, which may target a newer SDK and cause "Cannot find native module" errors at runtime.
+> `npx expo install` resolves the SDK-compatible version automatically.

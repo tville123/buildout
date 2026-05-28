@@ -8,9 +8,10 @@ import SectionLabel from '../components/SectionLabel';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function TileScreen() {
+export default function TileScreen({ onAddToQuote }: CalcScreenProps) {
   const [roomL, setRoomL] = useState('');
   const [roomW, setRoomW] = useState('');
   const [tileW, setTileW] = useState('');
@@ -29,7 +30,6 @@ export default function TileScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Tile" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
@@ -74,6 +74,14 @@ export default function TileScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Tile Calc',
+                items: [{ description: `Floor tile — ${result.roomArea.toFixed(0)} sq ft`, quantity: result.boxesNeeded, unitPrice: 48, source: 'Tile Calc' }],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Always buy 10% extra — tile dye lots vary between batches and replacements may not match.</Text>
           </View>

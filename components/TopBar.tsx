@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../theme';
 import { usePaid } from '../context/PaidContext';
 
@@ -8,7 +9,9 @@ type ActionName = 'share' | 'settings' | 'more';
 interface TopBarProps {
   tag: string;
   onBack?: () => void;
+  onTagPress?: () => void;
   actions?: ReadonlyArray<ActionName>;
+  onActionPress?: (action: ActionName) => void;
 }
 
 const ICON_NAME: Record<ActionName, React.ComponentProps<typeof Ionicons>['name']> = {
@@ -17,17 +20,23 @@ const ICON_NAME: Record<ActionName, React.ComponentProps<typeof Ionicons>['name'
   more: 'ellipsis-horizontal-outline',
 };
 
-export default function TopBar({ tag, onBack, actions = ['share', 'settings'] }: TopBarProps) {
+export default function TopBar({ tag, onBack, onTagPress, actions = ['share', 'settings'], onActionPress }: TopBarProps) {
   const isPaid = usePaid();
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, { paddingTop: insets.top + 14 }]}>
       <View style={styles.left}>
         {onBack ? (
           <TouchableOpacity onPress={onBack} style={styles.iconBtn} activeOpacity={0.7}>
             <Ionicons name="chevron-back-outline" size={19} color={C.textMid} />
           </TouchableOpacity>
         ) : null}
-        <Text style={styles.tag}>{tag}</Text>
+        <TouchableOpacity onPress={onTagPress} activeOpacity={onTagPress ? 0.7 : 1} style={styles.tagRow}>
+          <Text style={styles.tag}>{tag}</Text>
+          {onTagPress ? (
+            <Ionicons name="chevron-down-outline" size={12} color={C.yellow} style={{ marginLeft: 3 }} />
+          ) : null}
+        </TouchableOpacity>
       </View>
       <View style={styles.right}>
         {!isPaid && (
@@ -36,7 +45,7 @@ export default function TopBar({ tag, onBack, actions = ['share', 'settings'] }:
           </View>
         )}
         {actions.map(name => (
-          <TouchableOpacity key={name} style={styles.iconBtn} activeOpacity={0.7}>
+          <TouchableOpacity key={name} style={styles.iconBtn} activeOpacity={0.7} onPress={() => onActionPress?.(name)}>
             <Ionicons name={ICON_NAME[name]} size={19} color={C.textMid} />
           </TouchableOpacity>
         ))}
@@ -50,7 +59,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? 68 : 44,
     paddingBottom: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -66,6 +74,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   tag: {
     fontFamily: 'IBMPlexSans_500Medium',

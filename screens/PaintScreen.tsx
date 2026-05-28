@@ -15,9 +15,10 @@ import ToggleChip from '../components/ToggleChip';
 import WallCard from '../components/WallCard';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
-export default function PaintScreen() {
+export default function PaintScreen({ onAddToQuote }: CalcScreenProps) {
   const [mode, setMode] = useState<'room' | 'manual'>('room');
   const [length, setLength] = useState('');
   const [width, setWidth] = useState('');
@@ -27,7 +28,7 @@ export default function PaintScreen() {
   const [windowCount, setWindowCount] = useState('1');
   const [hasCeiling, setHasCeiling] = useState(false);
   const [walls, setWalls] = useState<Wall[]>([]);
-  const [wallCounter, setWallCounter] = useState(0);
+  const [, setWallCounter] = useState(0);
   const [coverageRate, setCoverageRate] = useState<number>(400);
   const [coats, setCoats] = useState<number>(2);
   const [priceWalls, setPriceWalls] = useState('');
@@ -124,7 +125,6 @@ export default function PaintScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Paint" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Mode" />
@@ -243,6 +243,18 @@ export default function PaintScreen() {
               }] : []),
             ]}
           />
+
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Paint Calc',
+                items: [
+                  { description: `Wall paint — ${result.wallArea.toFixed(0)} sq ft, ${coats} coat${coats > 1 ? 's' : ''}`, quantity: result.wallBuy.gallons || 1, unitPrice: 58, source: 'Paint Calc' },
+                  ...(result.ceilBuy ? [{ description: `Ceiling paint — ${result.ceilingArea.toFixed(0)} sq ft`, quantity: result.ceilBuy.gallons || 1, unitPrice: 52, source: 'Paint Calc' }] : []),
+                ],
+              })}
+            />
+          )}
 
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Always grab 10% extra for touch-ups. {result.proTip}</Text>

@@ -41,11 +41,17 @@ npx expo start
 # Run on iOS Simulator (requires macOS + Xcode)
 npx expo start --ios
 
+# Full native rebuild — required after changing assets (icon, splash) or app.json config
+npx expo run:ios
+
 # Run on physical iPhone (scan the QR code from `npx expo start` in Expo Go)
 
 # Verify the bundle compiles clean
 npx expo export
 ```
+
+> **Adding packages?** Always use `npx expo install <package>`, not `npm install`.
+> Expo resolves the SDK-compatible version — `npm install` grabs latest and can cause native module crashes.
 
 ---
 

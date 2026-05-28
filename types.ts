@@ -1,3 +1,24 @@
+export interface LineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  source?: string;
+}
+
+export interface Quote {
+  id: string;
+  clientName: string;
+  jobDescription: string;
+  lineItems: LineItem[];
+  taxRate: number;
+  status: 'draft' | 'sent';
+  updatedAt: string;
+  createdAt: string;
+}
+
+export type ToolName = 'Paint' | 'Tile' | 'Grout' | 'LVP' | 'Carpet' | 'Stairs' | 'Drywall';
+
 export interface Wall {
   id: number;
   widthText: string;

@@ -8,7 +8,9 @@ type ActionName = 'share' | 'settings' | 'more';
 interface TopBarProps {
   tag: string;
   onBack?: () => void;
+  onTagPress?: () => void;
   actions?: ReadonlyArray<ActionName>;
+  onActionPress?: (action: ActionName) => void;
 }
 
 const ICON_NAME: Record<ActionName, React.ComponentProps<typeof Ionicons>['name']> = {
@@ -17,7 +19,7 @@ const ICON_NAME: Record<ActionName, React.ComponentProps<typeof Ionicons>['name'
   more: 'ellipsis-horizontal-outline',
 };
 
-export default function TopBar({ tag, onBack, actions = ['share', 'settings'] }: TopBarProps) {
+export default function TopBar({ tag, onBack, onTagPress, actions = ['share', 'settings'], onActionPress }: TopBarProps) {
   const isPaid = usePaid();
   return (
     <View style={styles.bar}>
@@ -27,7 +29,12 @@ export default function TopBar({ tag, onBack, actions = ['share', 'settings'] }:
             <Ionicons name="chevron-back-outline" size={19} color={C.textMid} />
           </TouchableOpacity>
         ) : null}
-        <Text style={styles.tag}>{tag}</Text>
+        <TouchableOpacity onPress={onTagPress} activeOpacity={onTagPress ? 0.7 : 1} style={styles.tagRow}>
+          <Text style={styles.tag}>{tag}</Text>
+          {onTagPress ? (
+            <Ionicons name="chevron-down-outline" size={12} color={C.yellow} style={{ marginLeft: 3 }} />
+          ) : null}
+        </TouchableOpacity>
       </View>
       <View style={styles.right}>
         {!isPaid && (
@@ -36,7 +43,7 @@ export default function TopBar({ tag, onBack, actions = ['share', 'settings'] }:
           </View>
         )}
         {actions.map(name => (
-          <TouchableOpacity key={name} style={styles.iconBtn} activeOpacity={0.7}>
+          <TouchableOpacity key={name} style={styles.iconBtn} activeOpacity={0.7} onPress={() => onActionPress?.(name)}>
             <Ionicons name={ICON_NAME[name]} size={19} color={C.textMid} />
           </TouchableOpacity>
         ))}
@@ -66,6 +73,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   tag: {
     fontFamily: 'IBMPlexSans_500Medium',

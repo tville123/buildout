@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-05-27
 **Active Branch:** main
 
 ## Project Overview
@@ -22,13 +22,13 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - `design-system/` directory added — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
 - Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
 - Monetization stubs in place: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
-- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`
+- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`, `Quote`, `LineItem`, `ToolName`
 - EAS build config in `eas.json` (development / preview / production profiles)
+- **Nav refactor complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), ToolSwitcherSheet modal, Quote stack (history → builder → PDF preview), AddToQuoteCTA on all calc screens, onboarding flow, settings screen, paywall sheet — see nav graph below
 
 ### Blocking ⚠️
 
-- [ ] Quote module not started — nav refactor + all Quote screens/components/utils needed (see roadmap)
-- [ ] Navigation refactor: current flat 7-tab bar → two-section layout (Calculate top-tabs | Quote stack)
+- [x] Quote module + nav refactor — COMPLETE (2026-05-27) — see file list below
 - [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
 - [ ] Wire up IAP (`expo-in-app-purchases` or RevenueCat) and replace PaidContext stub
 - [ ] Apple Developer Account pending ($99/yr) — [developer.apple.com](https://developer.apple.com)

@@ -9,7 +9,8 @@ import SegControl from '../components/SegControl';
 import InputBlock from '../components/InputBlock';
 import ResultCard from '../components/ResultCard';
 import ShoppingList from '../components/ShoppingList';
-import TopBar from '../components/TopBar';
+import AddToQuoteCTA from '../components/AddToQuoteCTA';
+import type { CalcScreenProps } from './CalculatorScreen';
 
 const JOINT_OPTIONS: Array<{ value: number; label: string }> = [
   { value: 0.125, label: '1/8"' },
@@ -17,7 +18,7 @@ const JOINT_OPTIONS: Array<{ value: number; label: string }> = [
   { value: 0.25, label: '1/4"' },
 ];
 
-export default function GroutScreen() {
+export default function GroutScreen({ onAddToQuote }: CalcScreenProps) {
   const [roomL, setRoomL] = useState('');
   const [roomW, setRoomW] = useState('');
   const [tileW, setTileW] = useState('');
@@ -37,7 +38,6 @@ export default function GroutScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: C.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TopBar tag="Grout" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={s.section}>
           <SectionLabel text="01 — Room Size" />
@@ -87,6 +87,14 @@ export default function GroutScreen() {
               },
             ]}
           />
+          {onAddToQuote && (
+            <AddToQuoteCTA
+              onPress={() => onAddToQuote({
+                source: 'Grout Calc',
+                items: [{ description: `Sanded grout — ${JOINT_OPTIONS.find(o => o.value === jointWidth)?.label} joints`, quantity: result.bagsNeeded, unitPrice: 32, source: 'Grout Calc' }],
+              })}
+            />
+          )}
           <View style={s.tipBar}>
             <Text style={s.tipText}><Text style={s.tipStrong}>Pro tip: </Text>Use sanded grout for joints wider than 1/8". Unsanded grout for 1/16"–1/8" joints or polished tile.</Text>
           </View>

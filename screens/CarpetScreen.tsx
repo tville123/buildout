@@ -20,7 +20,7 @@ export default function CarpetScreen({ onAddToQuote }: CalcScreenProps) {
     const l = parseFloat(roomL) || 0;
     const w = parseFloat(roomW) || 0;
     const psy = parseFloat(pricePerSqYard) || 0;
-    if (!l || !w) return null;
+    if (l <= 0 || w <= 0) return null;
     return calcCarpet({ roomL: l, roomW: w, pricePerSqYard: psy || null });
   })();
 

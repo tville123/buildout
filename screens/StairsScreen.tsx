@@ -24,8 +24,8 @@ export default function StairsScreen({ onAddToQuote }: CalcScreenProps) {
     const td = parseFloat(treadDepth) || 0;
     const rh = parseFloat(riserHeight) || 0;
     const sw = parseFloat(stairWidth) || 0;
-    if (!ns || !td || !sw) return null;
-    if (carpetRisers && !rh) return null;
+    if (ns <= 0 || td <= 0 || sw <= 0) return null;
+    if (carpetRisers && rh <= 0) return null;
     return calcStairs({ numStairs: ns, treadDepth: td, riserHeight: rh, stairWidth: sw, carpetRisers });
   })();
 

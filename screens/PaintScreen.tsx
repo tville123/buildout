@@ -77,9 +77,9 @@ export default function PaintScreen({ onAddToQuote }: CalcScreenProps) {
       const l = parseFloat(length) || 0;
       const w = parseFloat(width) || 0;
       const h = parseFloat(height) || 0;
-      if (!l || !w || !h) return null;
+      if (l <= 0 || w <= 0 || h <= 0) return null;
       let wallArea = 2 * (l + w) * h;
-      const winCount = parseInt(windowCount) || 1;
+      const winCount = Math.max(1, parseInt(windowCount) || 1);
       const dW = parseFloat(doorW) || 3;
       const dH = parseFloat(doorH) || 7;
       const wW = parseFloat(windowW) || 3;
@@ -98,7 +98,7 @@ export default function PaintScreen({ onAddToQuote }: CalcScreenProps) {
       const totalCost = wallCost !== null || ceilCost !== null ? (wallCost ?? 0) + (ceilCost ?? 0) : null;
       return { totalGallons, totalArea: wallArea + ceilingArea, coats, wallBuy, ceilBuy, wallArea, ceilingArea, totalCost, summaryRows: null, proTip: wallBuy.quarts > 0 ? 'A quart is perfect for small walls or accent coverage.' : 'Full gallons are the best value at this size.' };
     } else {
-      const valid = walls.filter(w => w.width > 0 && w.height > 0);
+      const valid = walls.filter(w => w.width > 0 && w.height > 0 && isFinite(w.width) && isFinite(w.height));
       if (valid.length === 0) return null;
       let wallArea = 0;
       const summaryRows: Array<{ name: string; sqft: number }> = [];

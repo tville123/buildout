@@ -6,13 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C } from '../theme';
 import TopBar from '../components/TopBar';
-import { usePaid } from '../context/PaidContext';
+import { usePaid, usePaidActions } from '../context/PaidContext';
 import type { RootStackParamList } from '../navigationRef';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
 export default function SettingsScreen({ navigation }: Props) {
   const isPaid = usePaid();
+  const { purchase, restore, isLoading } = usePaidActions();
   const [autoSave, setAutoSave] = useState(true);
   const [haptics, setHaptics] = useState(true);
 
@@ -35,8 +36,12 @@ export default function SettingsScreen({ navigation }: Props) {
               <Text style={styles.proTitle}>$2.99 — one time</Text>
               <Text style={styles.proDesc}>Removes ads and unlocks PDF export. No subscription.</Text>
             </View>
-            <TouchableOpacity style={styles.proBtn} activeOpacity={0.8}>
-              <Text style={styles.proBtnText}>Unlock</Text>
+            <TouchableOpacity
+              style={[styles.proBtn, isLoading && { opacity: 0.5 }]}
+              activeOpacity={0.8}
+              onPress={isLoading ? undefined : purchase}
+            >
+              <Text style={styles.proBtnText}>{isLoading ? '…' : 'Unlock'}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -76,7 +81,7 @@ export default function SettingsScreen({ navigation }: Props) {
           <SettingRow label="Send feedback" chevron />
           <SettingRow label="Privacy policy" chevron />
           <SettingRow label="Terms of service" chevron />
-          <SettingRow label="Restore purchases" chevron />
+          <SettingRow label="Restore purchases" chevron onPress={isLoading ? undefined : restore} />
           <Text style={styles.version}>BUILDOUT<Text style={{ color: C.yellow }}>.</Text> · v1.0 (b. 117)</Text>
         </View>
 
@@ -86,9 +91,9 @@ export default function SettingsScreen({ navigation }: Props) {
   );
 }
 
-function SettingRow({ label, value, chevron }: { label: string; value?: string; chevron?: boolean }) {
+function SettingRow({ label, value, chevron, onPress }: { label: string; value?: string; chevron?: boolean; onPress?: () => void }) {
   return (
-    <TouchableOpacity style={styles.row} activeOpacity={chevron ? 0.7 : 1}>
+    <TouchableOpacity style={styles.row} activeOpacity={chevron ? 0.7 : 1} onPress={onPress}>
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.rowRight}>
         {value ? <Text style={styles.rowValue}>{value}</Text> : null}

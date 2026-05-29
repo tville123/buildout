@@ -1,17 +1,29 @@
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { C } from '../theme';
 
 interface PaywallSheetProps {
   visible: boolean;
-  onUnlock: () => void;
+  onUnlock: () => Promise<void>;
   onSkip: () => void;
 }
 
 export default function PaywallSheet({ visible, onUnlock, onSkip }: PaywallSheetProps) {
+  const [buying, setBuying] = useState(false);
+
+  const handleUnlock = async () => {
+    setBuying(true);
+    try {
+      await onUnlock();
+    } finally {
+      setBuying(false);
+    }
+  };
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onSkip}>
-      <TouchableOpacity style={styles.scrim} activeOpacity={1} onPress={onSkip} />
+      <TouchableOpacity style={styles.scrim} activeOpacity={1} onPress={buying ? undefined : onSkip} />
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <View style={styles.mark}>
@@ -36,14 +48,24 @@ export default function PaywallSheet({ visible, onUnlock, onSkip }: PaywallSheet
             </View>
           ))}
         </View>
-        <TouchableOpacity style={styles.cta} onPress={onUnlock} activeOpacity={0.85}>
-          <View style={styles.ctaLeft}>
-            <Text style={styles.ctaEyebrow}>One-time</Text>
-            <Text style={styles.ctaLabel}>Unlock Buildout Pro</Text>
-          </View>
-          <Text style={styles.ctaPrice}>$2.99</Text>
+        <TouchableOpacity
+          style={[styles.cta, buying && styles.ctaBuying]}
+          onPress={buying ? undefined : handleUnlock}
+          activeOpacity={0.85}
+        >
+          {buying ? (
+            <ActivityIndicator color="#000" style={{ flex: 1 }} />
+          ) : (
+            <>
+              <View style={styles.ctaLeft}>
+                <Text style={styles.ctaEyebrow}>One-time</Text>
+                <Text style={styles.ctaLabel}>Unlock Buildout Pro</Text>
+              </View>
+              <Text style={styles.ctaPrice}>$2.99</Text>
+            </>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.skipBtn} onPress={onSkip} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.skipBtn} onPress={buying ? undefined : onSkip} activeOpacity={0.7}>
           <Text style={styles.skipText}>Maybe later</Text>
         </TouchableOpacity>
       </View>
@@ -142,6 +164,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  ctaBuying: {
+    opacity: 0.6,
   },
   ctaLeft: {
     gap: 2,

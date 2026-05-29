@@ -23,9 +23,13 @@ A mobile-first suite of home renovation calculators. Free with ads; a one-time $
 
 - **React Native + Expo** (blank template, TypeScript)
 - **@expo-google-fonts** — Bebas Neue, IBM Plex Sans, IBM Plex Mono
-- **@react-navigation/bottom-tabs** — 7-tab navigator, yellow active tint
+- **@react-navigation/bottom-tabs + native-stack** — 2-tab nav (Calculate + Quote), modal root stack
+- **AsyncStorage** — local quote storage
+- **expo-print + expo-sharing** — HTML-to-PDF export + share sheet
+- **react-native-purchases (RevenueCat)** — IAP: one-time `pro` entitlement ($2.99)
 - **Plain `useState`** — no Redux or Zustand needed at this scale
 - **EAS Build / EAS Submit** — App Store delivery
+- **Jest + jest-expo + @testing-library/react-native** — unit + integration tests
 
 ---
 
@@ -59,33 +63,47 @@ npx expo export
 
 ```
 buildout/
-├── App.tsx                   ← root + bottom-tab navigator
+├── App.tsx                   ← root: RootStack → MainTabs → CalcStack / QuoteStack
+├── navigationRef.ts          ← global nav ref + navigateToSettings()
 ├── theme.ts                  ← color tokens + shared constants
 ├── styles.ts                 ← shared StyleSheet styles
-├── types.ts                  ← shared TypeScript types
+├── types.ts                  ← shared TypeScript types (Wall, Quote, LineItem, ToolName…)
 ├── index.ts                  ← entry point
 ├── screens/
+│   ├── CalculatorScreen.tsx  ← hosts all 7 tools + ToolSwitcherSheet
 │   ├── PaintScreen.tsx
 │   ├── TileScreen.tsx
 │   ├── GroutScreen.tsx
 │   ├── LVPScreen.tsx
 │   ├── CarpetScreen.tsx
 │   ├── StairsScreen.tsx
-│   └── DrywallScreen.tsx
+│   ├── DrywallScreen.tsx
+│   ├── QuoteHistoryScreen.tsx
+│   ├── QuoteBuilderScreen.tsx
+│   ├── PDFPreviewScreen.tsx
+│   ├── SettingsScreen.tsx
+│   └── OnboardingScreen.tsx
 ├── components/
+│   ├── TopBar.tsx            ← shared 52px header
 │   ├── SectionLabel.tsx
 │   ├── SegControl.tsx
 │   ├── InputBlock.tsx
 │   ├── ToggleChip.tsx
 │   ├── WallCard.tsx          ← Paint-specific
 │   ├── ResultCard.tsx        ← shared results display
-│   └── ShoppingList.tsx      ← shared shopping list
+│   ├── ShoppingList.tsx      ← shared shopping list
+│   ├── AddToQuoteCTA.tsx
+│   ├── LineItemSheet.tsx
+│   ├── PaywallSheet.tsx      ← async purchase flow + loading state
+│   ├── QuoteCard.tsx
+│   └── ToolSwitcherSheet.tsx
+├── context/
+│   ├── PaidContext.tsx       ← RevenueCat IAP — usePaid() + usePaidActions()
+│   └── QuoteContext.tsx      ← AsyncStorage-backed quote CRUD
 ├── utils/
 │   └── calculator.ts         ← all math helpers
 ├── ads/
 │   └── AdBanner.tsx          ← AdMob stub (renders null until wired)
-├── context/
-│   └── PaidContext.tsx       ← IAP stub (free tier by default)
 ├── app.json                  ← bundle ID: com.drafthouse.buildout
 ├── eas.json                  ← EAS build profiles
 └── assets/
@@ -131,8 +149,8 @@ Or download the `.ipa` from expo.dev and upload manually via Xcode → Product �
 | Subtitle | Home renovation calculators |
 | Bundle ID | `com.drafthouse.buildout` |
 | Category | Utilities |
-| Price | Free (ads) + $2.99 IAP to remove ads |
-| Keywords | home renovation calculator, paint, tile, flooring, contractor, LVP, carpet |
+| Price | Free (ads) + $2.99 IAP to remove ads + unlock PDF export |
+| Keywords | home renovation calculator, paint, tile, grout, flooring, drywall, contractor, job quote, LVP, carpet |
 
 **App Store description:**
 ```
@@ -140,6 +158,7 @@ Buildout takes the guesswork out of home renovation.
 
 Enter your room dimensions and get exact material estimates — 
 broken down into ready-to-shop lists with waste already factored in.
+Build job quotes with line items, tax, and PDF export.
 
 CALCULATORS INCLUDED
 • Paint — gallons and quarts for any room, smooth to textured surfaces
@@ -150,8 +169,13 @@ CALCULATORS INCLUDED
 • Stairs — tread and riser area with 15% stair-cut waste
 • Drywall — sheets, joint compound, tape, and screws
 
-No account required. All calculations are local — zero data collected.
-Free with ads. One-time $2.99 upgrade removes ads permanently.
+QUOTE BUILDER
+• Add line items, set quantities and unit prices
+• Optional tax rate, auto-calculated totals
+• Export a professional PDF quote (Pro)
+
+No account required. All data stays on your device — zero data collected.
+Free with ads. One-time $2.99 upgrade removes ads and unlocks PDF export.
 
 Built for DIYers, contractors, and anyone who's ever overbought materials.
 ```
@@ -180,20 +204,20 @@ Host on GitHub Pages, Notion, or any free static host.
 
 | Tier | Experience |
 |------|-----------|
-| Free | All 7 tools, banner ads between results |
-| Paid ($2.99) | All 7 tools, no ads, one-time purchase |
+| Free | All 7 tools + quote builder, banner ads between results, PDF export locked |
+| Paid ($2.99) | All 7 tools + quote builder, no ads, PDF export unlocked — one-time purchase |
 
+- **IAP:** `react-native-purchases` (RevenueCat) — entitlement key: `pro`. Set `RC_IOS_KEY` in `context/PaidContext.tsx` before building. Hooks: `usePaid()` (boolean) + `usePaidActions()` (`purchase`, `restore`, `isLoading`).
 - **Ads:** Google AdMob via `react-native-google-mobile-ads` *(stub in place — wire up before launch)*
-- **IAP:** Expo In-App Purchases or RevenueCat *(stub in place — wire up before launch)*
 
 ---
 
 ## Blocking Before Launch
 
-- [ ] Apple Developer Account ($99/yr)
-- [ ] App icon — 1024×1024 PNG
+- [x] Apple Developer Account active (Manuel Villalobos | 1415684764)
+- [x] Wire up IAP — RevenueCat (`react-native-purchases`) integrated; set `RC_IOS_KEY` before building
+- [ ] App icon — 1024×1024 PNG (current asset needs to be replaced)
 - [ ] Wire up AdMob and replace `AdBanner.tsx` stub
-- [ ] Wire up IAP and replace `PaidContext.tsx` stub
 - [ ] Test on real device via TestFlight
 - [ ] Privacy policy URL (hosted page)
 - [ ] App Store Connect record created

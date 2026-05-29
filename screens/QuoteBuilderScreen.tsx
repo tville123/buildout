@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { QuoteStackParamList } from '../App';
 import { useQuote } from '../context/QuoteContext';
-import { usePaid } from '../context/PaidContext';
+import { usePaid, usePaidActions } from '../context/PaidContext';
 import { navigateToSettings } from '../navigationRef';
 import TopBar from '../components/TopBar';
 import SectionLabel from '../components/SectionLabel';
@@ -23,6 +23,7 @@ export default function QuoteBuilderScreen({ navigation, route }: Props) {
   const { quoteId } = route.params;
   const { getQuote, updateQuote } = useQuote();
   const isPaid = usePaid();
+  const { purchase } = usePaidActions();
 
   // Always read fresh from context — this picks up AddToQuote additions automatically
   const quote = getQuote(quoteId);
@@ -198,7 +199,13 @@ export default function QuoteBuilderScreen({ navigation, route }: Props) {
       />
       <PaywallSheet
         visible={showPaywall}
-        onUnlock={() => { setShowPaywall(false); navigation.push('PDFPreview', { quoteId }); }}
+        onUnlock={async () => {
+          const success = await purchase();
+          if (success) {
+            setShowPaywall(false);
+            navigation.push('PDFPreview', { quoteId });
+          }
+        }}
         onSkip={() => setShowPaywall(false)}
       />
     </KeyboardAvoidingView>

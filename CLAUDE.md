@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-28
+**Last Updated:** 2026-05-28 (IAP + testing infra)
 **Active Branch:** main
 
 ## Project Overview
@@ -20,7 +20,8 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - Shared components: `ResultCard`, `ShoppingList`, `SegControl`, `InputBlock`, `SectionLabel`, `ToggleChip`, `WallCard`, `TopBar`
 - `design-system/` directory — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
 - Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
-- Monetization stubs: `ads/AdBanner.tsx` (renders null), `context/PaidContext.tsx` (always returns false)
+- Monetization: `ads/AdBanner.tsx` stub (renders null); `context/PaidContext.tsx` — RevenueCat IAP wired (`react-native-purchases`), exposes `usePaid()` + `usePaidActions()` (`purchase`, `restore`, `isLoading`); set `RC_IOS_KEY` before building
+- **Testing infrastructure** (2026-05-28): Jest + jest-expo + `@testing-library/react-native`; test files: `context/QuoteContext.test.tsx`, `utils/calculator.test.ts`; run with `npm test`
 - TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`, `Quote`, `LineItem`, `ToolName`
 - EAS build config in `eas.json` (development / preview / production profiles)
 - **Nav refactor + Quote module complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), `CalculatorScreen` wraps all 7 tools via `ToolSwitcherSheet` modal, Quote stack (history → builder → PDF preview), `AddToQuoteCTA` on all calc screens, onboarding flow, settings screen, `PaywallSheet` — see nav graph below
@@ -29,10 +30,10 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 ### Blocking ⚠️
 
-- [x] Quote module + nav refactor — COMPLETE (2026-05-27) — see file list below
-- [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
-- [ ] Wire up IAP (`expo-in-app-purchases` or RevenueCat) and replace PaidContext stub
+- [x] Quote module + nav refactor — COMPLETE (2026-05-27)
+- [x] IAP wired up — RevenueCat (`react-native-purchases`) integrated (2026-05-28); set `RC_IOS_KEY` in `context/PaidContext.tsx`
 - [x] Apple Developer Account active — App Store Connect: Manuel Villalobos | 1415684764
+- [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
 - [ ] App icon needs to be 1024×1024 PNG before App Store submission
 - [ ] Test on real device via TestFlight before submission
 - [ ] Privacy policy URL (hosted page, required by App Store)
@@ -40,10 +41,10 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 ### Next Immediate Tasks
 
 1. Run on iOS Simulator: `npx expo start --ios`
-2. Smoke test all 7 calculator tools + Quote flow end-to-end
+2. Smoke test all 7 calculator tools + Quote flow + IAP paywall end-to-end
 3. Prepare 1024×1024 app icon asset
 4. Create app record in App Store Connect (account is active)
-5. Wire up AdMob + IAP
+5. Wire up AdMob (`react-native-google-mobile-ads`)
 
 ---
 
@@ -52,8 +53,8 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - **Free tier:** All calculators available with banner ads between results; quote builder available but PDF export locked
 - **Paid upgrade:** One-time in-app purchase (~$2.99) removes all ads AND unlocks PDF export
 - **PDF export as conversion hook:** Free users can build a quote but see an upgrade prompt when tapping Export — this is the natural paid conversion moment
-- **Ad implementation:** TBD — likely Google AdMob via `react-native-google-mobile-ads`
-- **IAP implementation:** Expo In-App Purchases (`expo-in-app-purchases`) or RevenueCat
+- **Ad implementation:** TBD — Google AdMob via `react-native-google-mobile-ads` (stub in place)
+- **IAP implementation:** RevenueCat (`react-native-purchases`) — entitlement: `pro`; hooks: `usePaid()` + `usePaidActions()`; requires setting `RC_IOS_KEY` in `PaidContext.tsx`
 
 ---
 
@@ -314,13 +315,14 @@ expo-font
 expo-status-bar
 expo-print                           ← HTML-to-PDF for quote export
 expo-sharing                         ← share PDF via share sheet
+react-native-purchases               ← RevenueCat IAP (entitlement: pro)
+jest / jest-expo / @testing-library/react-native  ← unit + integration tests
 ```
 
-### To Install for Monetization
+### To Install for Ads
 
 ```
 react-native-google-mobile-ads       ← add when implementing AdMob
-expo-in-app-purchases                ← add when implementing IAP (or use RevenueCat)
 ```
 
 State management: plain `useState` — no Redux or Zustand needed at this scale.
@@ -342,8 +344,9 @@ buildout/
 ├── app.json                       ← bundle ID: com.drafthouse.buildout
 ├── package.json
 ├── context/
-│   ├── PaidContext.tsx            ← IAP paid state stub (always returns false)
-│   └── QuoteContext.tsx           ← AsyncStorage-backed quote CRUD; storage key: buildout.quotes
+│   ├── PaidContext.tsx            ← RevenueCat IAP — usePaid() + usePaidActions() (purchase/restore/isLoading)
+│   ├── QuoteContext.tsx           ← AsyncStorage-backed quote CRUD; storage key: buildout.quotes
+│   └── QuoteContext.test.tsx      ← Jest integration tests for quote CRUD
 ├── screens/                       ← flat (no calculate/ or quote/ subdirs)
 │   ├── CalculatorScreen.tsx       ← hosts all 7 tool screens + ToolSwitcherSheet
 │   ├── PaintScreen.tsx
@@ -369,11 +372,12 @@ buildout/
 │   ├── ShoppingList.tsx           ← shared shopping list
 │   ├── AddToQuoteCTA.tsx          ← "Add to Quote" button shown on all calc screens
 │   ├── LineItemSheet.tsx          ← bottom sheet for adding/editing a line item
-│   ├── PaywallSheet.tsx           ← upgrade prompt modal
+│   ├── PaywallSheet.tsx           ← upgrade prompt modal — async purchase flow + ActivityIndicator loading state
 │   ├── QuoteCard.tsx              ← quote summary row in history list
 │   └── ToolSwitcherSheet.tsx      ← bottom sheet for switching between the 7 calc tools
 ├── utils/
-│   └── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
+│   ├── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
+│   └── calculator.test.ts         ← Jest unit tests for all calc functions
 ├── ads/
 │   └── AdBanner.tsx               ← AdMob stub (renders null)
 ├── assets/
@@ -418,8 +422,8 @@ buildout/
 - [ ] All 7 calculator tools smoke tested on device
 - [x] Quoting module complete (new quote, line items, tax, history)
 - [x] PDF export built and paywalled (smoke test on device still needed)
+- [x] IAP wired up — RevenueCat (`react-native-purchases`); set `RC_IOS_KEY` before building
 - [ ] AdMob wired up and replace AdBanner stub
-- [ ] IAP wired up and replace PaidContext stub
 - [ ] App icon 1024×1024 PNG in `assets/`
 - [ ] Test on real device via TestFlight
 - [ ] Privacy policy URL (hosted page stating zero data collection)
@@ -437,7 +441,6 @@ buildout/
 
 - Monitor crash reports in App Store Connect
 - Respond to early reviews
-- Ship IAP if stubbed at launch
 - Plan V1.1: Wallpaper + Underlayment calculators, deep link Calculate → Quote
 
 ---
@@ -450,6 +453,7 @@ npx expo start                                       # dev server
 npx expo start --ios                                 # iOS Simulator (macOS + Xcode)
 npx expo run:ios                                     # full native rebuild + install (required after asset/config changes)
 npx expo export                                      # verify bundle compiles clean
+npm test                                             # run Jest unit + integration tests
 eas build --platform ios --profile production        # App Store build
 eas submit --platform ios                            # submit to App Store Connect
 ```

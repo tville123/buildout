@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 // Paste your RevenueCat iOS public SDK key here before building
-const RC_IOS_KEY = 'YOUR_RC_IOS_API_KEY';
+const RC_IOS_KEY = 'test_OxkqPCeCGVyCcKwAixsJVvwpJgR';
 const ENTITLEMENT = 'pro';
 
 interface PaidContextValue {
@@ -51,7 +51,9 @@ export function PaidProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const offerings = await Purchases.getOfferings();
-      const pkg = offerings.current?.availablePackages[0];
+      const pkg =
+        offerings.current?.availablePackages.find(p => p.packageType === 'LIFETIME') ??
+        offerings.current?.availablePackages[0];
       if (!pkg) throw new Error('No packages available. Please try again later.');
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       const active = customerInfo.entitlements.active[ENTITLEMENT] !== undefined;

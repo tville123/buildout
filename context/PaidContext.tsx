@@ -3,8 +3,9 @@ import type { ReactNode } from 'react';
 import { Alert } from 'react-native';
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
-// Paste your RevenueCat iOS public SDK key here before building
-const RC_IOS_KEY = 'test_OxkqPCeCGVyCcKwAixsJVvwpJgR';
+const RC_IOS_KEY = __DEV__
+  ? 'test_OxkqPCeCGVyCcKwAixsJVvwpJgR'
+  : 'appl_seFjJoZfyGcLRwzZODZHHrLJqCc';
 const ENTITLEMENT = 'pro';
 
 interface PaidContextValue {

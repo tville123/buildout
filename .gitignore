@@ -43,3 +43,4 @@ yarn-error.*
 .vscode
 .vscode/settings.json
 coat.code-workspace
+_testScreenShots

@@ -207,7 +207,7 @@ Host on GitHub Pages, Notion, or any free static host.
 | Free | All 7 tools + quote builder, banner ads between results, PDF export locked |
 | Paid ($2.99) | All 7 tools + quote builder, no ads, PDF export unlocked — one-time purchase |
 
-- **IAP:** `react-native-purchases` (RevenueCat) — entitlement key: `pro`. Set `RC_IOS_KEY` in `context/PaidContext.tsx` before building. Hooks: `usePaid()` (boolean) + `usePaidActions()` (`purchase`, `restore`, `isLoading`).
+- **IAP:** `react-native-purchases` (RevenueCat) — entitlement: `pro`. Product `com.drafthouse.buildout.pro` (Non-Consumable, $2.99) created in App Store Connect and RevenueCat; `default` offering → `$rc_lifetime` package. Test key active in `context/PaidContext.tsx` — swap for production `appl_` key before `eas build --platform ios --profile production`. Hooks: `usePaid()` (boolean) + `usePaidActions()` (`purchase`, `restore`, `isLoading`).
 - **Ads:** Google AdMob via `react-native-google-mobile-ads` *(stub in place — wire up before launch)*
 
 ---
@@ -215,7 +215,7 @@ Host on GitHub Pages, Notion, or any free static host.
 ## Blocking Before Launch
 
 - [x] Apple Developer Account active (Manuel Villalobos | 1415684764)
-- [x] Wire up IAP — RevenueCat (`react-native-purchases`) integrated; set `RC_IOS_KEY` before building
+- [x] Wire up IAP — RevenueCat fully configured; product + offering set up; purchase flow tested; swap for production `appl_` key before App Store build
 - [ ] App icon — 1024×1024 PNG (current asset needs to be replaced)
 - [ ] Wire up AdMob and replace `AdBanner.tsx` stub
 - [ ] Test on real device via TestFlight

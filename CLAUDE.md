@@ -31,8 +31,9 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 ### Blocking ⚠️
 
 - [x] Quote module + nav refactor — COMPLETE (2026-05-27)
-- [x] IAP wired up — RevenueCat (`react-native-purchases`) integrated (2026-05-28); set `RC_IOS_KEY` in `context/PaidContext.tsx`
+- [x] IAP wired up — RevenueCat (`react-native-purchases`) integrated (2026-05-28); test key set in `context/PaidContext.tsx` (swap for production key before App Store build)
 - [x] Apple Developer Account active — App Store Connect: Manuel Villalobos | 1415684764
+- [x] RevenueCat fully configured — test key active; product (`com.drafthouse.buildout.pro`) created in App Store Connect + RevenueCat; `default` offering wired to `$rc_lifetime` package; swap for production `appl_` key in `context/PaidContext.tsx` before `eas build --platform ios --profile production`
 - [ ] Wire up AdMob (`react-native-google-mobile-ads`) and replace AdBanner stub
 - [ ] App icon needs to be 1024×1024 PNG before App Store submission
 - [ ] Test on real device via TestFlight before submission
@@ -54,7 +55,7 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - **Paid upgrade:** One-time in-app purchase (~$2.99) removes all ads AND unlocks PDF export
 - **PDF export as conversion hook:** Free users can build a quote but see an upgrade prompt when tapping Export — this is the natural paid conversion moment
 - **Ad implementation:** TBD — Google AdMob via `react-native-google-mobile-ads` (stub in place)
-- **IAP implementation:** RevenueCat (`react-native-purchases`) — entitlement: `pro`; hooks: `usePaid()` + `usePaidActions()`; requires setting `RC_IOS_KEY` in `PaidContext.tsx`
+- **IAP implementation:** RevenueCat (`react-native-purchases`) — entitlement: `pro`; hooks: `usePaid()` + `usePaidActions()`; test key set in `PaidContext.tsx`; product `com.drafthouse.buildout.pro` (Non-Consumable, $2.99) created in App Store Connect + RevenueCat; `default` offering → `$rc_lifetime` package; purchase flow grabs `LIFETIME` package type first; swap for production `appl_` key before App Store build
 
 ---
 

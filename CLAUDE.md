@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-28 (IAP + testing infra)
+**Last Updated:** 2026-05-30 (Quote Workspace redesign + lint clean)
 **Active Branch:** main
 
 ## Project Overview
@@ -21,11 +21,13 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - `design-system/` directory — canonical visual reference for brand, tokens, component previews (HTML), and a mobile UI kit (React, web) covering Paint/Tile/Drywall screens
 - Calculator math in `utils/calculator.ts` for Tile, Grout, LVP, Carpet, Stairs, Drywall; Paint math is inline in `PaintScreen.tsx`
 - Monetization: `ads/AdBanner.tsx` stub (renders null); `context/PaidContext.tsx` — RevenueCat IAP wired (`react-native-purchases`), exposes `usePaid()` + `usePaidActions()` (`purchase`, `restore`, `isLoading`); set `RC_IOS_KEY` before building
-- **Testing infrastructure** (2026-05-28): Jest + jest-expo + `@testing-library/react-native`; test files: `context/QuoteContext.test.tsx`, `utils/calculator.test.ts`; run with `npm test`
-- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`, `Quote`, `LineItem`, `ToolName`
+- **Testing infrastructure** (2026-05-28): Jest + jest-expo + `@testing-library/react-native`; test files: `context/WorkspaceContext.test.tsx`, `utils/calculator.test.ts`, `utils/workspace.test.ts`; run with `npm test`
+- TypeScript interfaces in `types.ts`: `Wall`, `ShoppingListBuy`, `PaintResult`, `Client`, `Quote`, `Invoice`, `InvoiceView`, `LineItem`, `ToolName`
 - EAS build config in `eas.json` (development / preview / production profiles)
-- **Nav refactor + Quote module complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), `CalculatorScreen` wraps all 7 tools via `ToolSwitcherSheet` modal, Quote stack (history → builder → PDF preview), `AddToQuoteCTA` on all calc screens, onboarding flow, settings screen, `PaywallSheet` — see nav graph below
-- `QuoteContext.tsx` — AsyncStorage-backed CRUD for quotes (storage key: `buildout.quotes`)
+- **Nav refactor + Quote module complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), `CalculatorScreen` wraps all 7 tools via `ToolSwitcherSheet` modal, `AddToQuoteCTA` on all calc screens, onboarding flow, settings screen, `PaywallSheet` — see nav graph below
+- **Quote Workspace redesign complete** (2026-05-30): 4-section workspace (Dashboard · Quotes · Invoices · Clients), invoice creation, quote→invoice conversion (`ConvertSheet`), client management, `WorkspaceContext.tsx` replaces `QuoteContext.tsx`
+- **Lint clean** (2026-05-30): ESLint passes with zero errors/warnings
+- `WorkspaceContext.tsx` — AsyncStorage-backed CRUD for clients, quotes, invoices (keys: `buildout.clients`, `buildout.quotes`, `buildout.invoices`); `ToastContext.tsx` — global pill toast
 - `navigationRef.ts` — global nav ref for imperative navigation (e.g. Settings modal from deep within calc screens)
 
 ### Blocking ⚠️
@@ -77,13 +79,15 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 
 **Quote Section**
 
-| # | Feature                 | Status   | Notes                                              |
-|---|-------------------------|----------|----------------------------------------------------|
-| 1 | New Quote builder       | ✓ Built  | `QuoteBuilderScreen.tsx` — client, desc, line items |
-| 2 | Line item entry         | ✓ Built  | `LineItemSheet.tsx` — description, qty, unit price  |
-| 3 | Tax + total calculation | ✓ Built  | Optional tax rate in QuoteBuilderScreen             |
-| 4 | PDF export              | ✓ Built  | `PDFPreviewScreen.tsx` — paywalled, `expo-print`    |
-| 5 | Quote history           | ✓ Built  | `QuoteHistoryScreen.tsx` — saved quotes list        |
+| # | Feature                    | Status   | Notes                                                              |
+|---|----------------------------|----------|--------------------------------------------------------------------|
+| 1 | Quote Workspace            | ✓ Built  | `WorkspaceScreen.tsx` — 4-section hub (Dashboard/Quotes/Invoices/Clients) |
+| 2 | Quote create/edit          | ✓ Built  | `QuoteFormScreen.tsx` — client select, line items, tax, status     |
+| 3 | Line item entry            | ✓ Built  | `LineItemEditor.tsx` + `LineItemSheet.tsx`                          |
+| 4 | Tax + total calculation    | ✓ Built  | `utils/workspace.ts` — `quoteTotals`, `invoiceTotals`              |
+| 5 | Invoice creation           | ✓ Built  | `NewInvoiceScreen.tsx` + quote→invoice via `ConvertSheet`          |
+| 6 | Client management          | ✓ Built  | `ClientDetailScreen.tsx`, `AddClientScreen.tsx`, `ClientSelect.tsx` |
+| 7 | PDF export (quotes + inv.) | ✓ Built  | `PDFPreviewScreen.tsx` — paywalled, `expo-print`                   |
 
 ### V1.1 — Post-Launch Updates
 
@@ -176,7 +180,7 @@ Screws         = ceil(wall area / 500) lbs
 
 ### Current State (implemented in App.tsx)
 
-2-tab bottom nav. Calculate tab uses a single `CalculatorScreen` that renders whichever tool is active; tool switching is via `ToolSwitcherSheet` modal (not material-top-tabs). Quote tab is a native stack. Settings is a modal on the root stack.
+2-tab bottom nav. Calculate tab uses a single `CalculatorScreen` that renders whichever tool is active; tool switching is via `ToolSwitcherSheet` modal (not material-top-tabs). Quote tab is a native stack hosting the **Quote Workspace** — a 4-section workspace (Dashboard · Quotes · Invoices · Clients) with quote→invoice conversion. Settings is a modal on the root stack.
 
 ```
 App.tsx (RootStack)
@@ -184,9 +188,14 @@ App.tsx (RootStack)
 │   ├── Calculate (CalcStack)
 │   │   └── Calculator  (CalculatorScreen.tsx — hosts all 7 tools, ToolSwitcherSheet)
 │   └── Quote (QuoteStack)
-│       ├── QuoteHistory   (QuoteHistoryScreen.tsx)
-│       ├── QuoteBuilder   (QuoteBuilderScreen.tsx)
-│       └── PDFPreview     (PDFPreviewScreen.tsx)
+│       ├── Workspace      (WorkspaceScreen.tsx — TopBar + fixed SectionNav + 4 section bodies)
+│       │   └── sections/  (DashboardSection, QuotesSection, InvoicesSection, ClientsSection)
+│       ├── ClientDetail   (ClientDetailScreen.tsx)
+│       ├── InvoiceDetail  (InvoiceDetailScreen.tsx)
+│       ├── QuoteForm      (QuoteFormScreen.tsx — merged create/edit; calc "Add to Quote" lands here)
+│       ├── NewInvoice     (NewInvoiceScreen.tsx — "bill from approved quote" prefill)
+│       ├── AddClient      (AddClientScreen.tsx)
+│       └── PDFPreview     (PDFPreviewScreen.tsx — quotes AND invoices)
 └── Settings (modal)       (SettingsScreen.tsx)
 ```
 
@@ -194,39 +203,50 @@ App.tsx (RootStack)
 
 - Tool switching inside Calculate uses `ToolSwitcherSheet` bottom sheet, not a tab bar — avoids `@react-navigation/material-top-tabs` dependency
 - `ToolName` (`types.ts`) drives which screen `CalculatorScreen` renders via a `Record<ToolName, ComponentType>` map
+- `WorkspaceScreen` holds the active section in local state (instant swap, no nav); the fixed `SectionNav` (segmented variant) sits between TopBar and the scroll area. Cross-section jumps use `navigation.navigate('Workspace', { section })`
+- Convert-to-Invoice is a `Modal` bottom sheet (`ConvertSheet`), not a route
 - `navigationRef.ts` provides a global nav ref so calc screens can open Settings without prop drilling
-- `QuoteContext.tsx` provides quote CRUD to all screens; persists to AsyncStorage (`buildout.quotes`)
+- `WorkspaceContext.tsx` provides clients/quotes/invoices CRUD + derived stats to all screens; persists to AsyncStorage (`buildout.clients`, `buildout.quotes`, `buildout.invoices`; `buildout.schemaVersion` gates one-time migration of legacy quotes)
+- `ToastContext.tsx` provides the global `#1a1a1a` pill toast (`showToast`, 1.8s auto-dismiss)
 - `OnboardingScreen` is rendered outside the nav tree until `buildout.hasOnboarded` is set
 
 ---
 
 ## Quoting Module
 
-> **Status: COMPLETE** (2026-05-27). Spec below reflects the implemented design.
+> **Status: COMPLETE** (2026-05-27). **Redesigned into the Quote Workspace** (2026-05-30) — a 4-section workspace (Dashboard · Quotes · Invoices · Clients) with quote→invoice conversion. Schema below reflects the current model (`types.ts`).
 
 ### Data Model
 
+All local (AsyncStorage). Quotes reference a `Client` by id and carry a stored `total`; invoices link back to the quote they were billed from. Invoice `status` is only `pending|paid` — `overdue` is **derived** (`pending && dueAt < now`) via `invoiceView()` in `utils/workspace.ts`, so a pending invoice flips to overdue automatically.
+
 ```typescript
+interface Client { id; name; phone; email; initials; }   // initials derived at create
+
 interface Quote {
-  id: string;            // uuid
-  createdAt: number;     // timestamp
-  updatedAt: number;     // timestamp
-  clientName: string;
-  jobDescription: string;
+  id; number;                       // sequential quote number
+  clientId: string | null;          // null = unassigned draft (calc-created)
+  job: string;
   lineItems: LineItem[];
-  taxRate: number;       // percentage, e.g. 8.5
-  notes: string;         // optional footer note on PDF
-  status: 'draft' | 'sent';
+  taxRate: number;                  // percentage
+  total: number;                    // stored snapshot = subtotal + tax
+  status: 'draft' | 'sent' | 'approved';
+  createdAt; updatedAt;             // ISO strings
 }
 
-interface LineItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;     // USD
-  total: number;         // quantity × unitPrice (derived)
+interface Invoice {
+  id; number; clientId: string | null; quoteId?: string;  // quoteId set when converted
+  job: string; amount: number; lineItems: LineItem[]; taxRate: number;
+  status: 'pending' | 'paid';       // 'overdue' is derived, not stored
+  dueAt; paidAt?; createdAt;        // ISO strings
 }
+
+interface LineItem { id; description; quantity; unitPrice; source?; }  // source = originating calculator
 ```
+
+**Migration:** legacy quotes (`clientName` string, `jobDescription`, status `draft|sent`) auto-migrate on first load — a `Client` is derived per distinct name, `jobDescription→job`, numbers assigned, `total` computed. Gated by `buildout.schemaVersion`.
+
+**Conversion:** `convertQuoteToInvoice(quoteId, { termDays, deposit })` — full conversion copies line items + tax; a 50% deposit creates one `50% deposit — <job> (quote #n)` line. Eligible only when `status === 'approved'` and not already invoiced.
 
 ### Quote Math
 
@@ -246,8 +266,8 @@ Grand total      = subtotal + tax amount
 
 ### Storage
 
-- Quotes stored locally with `AsyncStorage` — no backend, no account required
-- Key format: `buildout.quotes` → array of Quote objects (managed by `context/QuoteContext.tsx`)
+- All data stored locally with `AsyncStorage` — no backend, no account required
+- Keys: `buildout.clients`, `buildout.quotes`, `buildout.invoices` (managed by `context/WorkspaceContext.tsx`); `buildout.schemaVersion` gates one-time migration from legacy quote shape
 
 ---
 
@@ -339,16 +359,17 @@ buildout/
 ├── index.ts                       ← Expo entry point (registerRootComponent)
 ├── theme.ts                       ← C (color tokens) + WALL_NAMES constant
 ├── styles.ts                      ← shared StyleSheet for all screens
-├── types.ts                       ← Wall, ShoppingListBuy, PaintResult, Quote, LineItem, ToolName
+├── types.ts                       ← Wall, ShoppingListBuy, PaintResult, Client, Quote, Invoice, LineItem, ToolName
 ├── tsconfig.json                  ← extends expo/tsconfig.base, strict mode
 ├── eas.json                       ← EAS build profiles (dev / preview / production)
 ├── app.json                       ← bundle ID: com.drafthouse.buildout
 ├── package.json
 ├── context/
 │   ├── PaidContext.tsx            ← RevenueCat IAP — usePaid() + usePaidActions() (purchase/restore/isLoading)
-│   ├── QuoteContext.tsx           ← AsyncStorage-backed quote CRUD; storage key: buildout.quotes
-│   └── QuoteContext.test.tsx      ← Jest integration tests for quote CRUD
-├── screens/                       ← flat (no calculate/ or quote/ subdirs)
+│   ├── WorkspaceContext.tsx       ← unified clients/quotes/invoices CRUD + convert/markPaid + derived stats; keys: buildout.{clients,quotes,invoices}; useWorkspace()
+│   ├── WorkspaceContext.test.tsx  ← Jest integration tests for workspace CRUD + conversion + migration
+│   └── ToastContext.tsx           ← global toast pill — useToast() → showToast(msg)
+├── screens/                       ← flat, plus sections/ subdir for the 4 workspace bodies
 │   ├── CalculatorScreen.tsx       ← hosts all 7 tool screens + ToolSwitcherSheet
 │   ├── PaintScreen.tsx
 │   ├── TileScreen.tsx
@@ -357,28 +378,44 @@ buildout/
 │   ├── CarpetScreen.tsx
 │   ├── StairsScreen.tsx
 │   ├── DrywallScreen.tsx
-│   ├── QuoteHistoryScreen.tsx     ← list of saved quotes
-│   ├── QuoteBuilderScreen.tsx     ← new/edit quote, line items, tax, totals
-│   ├── PDFPreviewScreen.tsx       ← HTML-to-PDF preview + share; paywalled
+│   ├── WorkspaceScreen.tsx        ← Quote-tab host: TopBar + SectionNav + section switch
+│   ├── sections/                  ← DashboardSection, QuotesSection, InvoicesSection, ClientsSection
+│   ├── ClientDetailScreen.tsx     ← avatar header, summary card, Quotes/Invoices tabs
+│   ├── InvoiceDetailScreen.tsx    ← read-only line-item breakdown, due line, Mark as Paid
+│   ├── QuoteFormScreen.tsx        ← merged create/edit quote (client select, line items, tax, status, export)
+│   ├── NewInvoiceScreen.tsx       ← new invoice form, optional "bill from approved quote" prefill
+│   ├── AddClientScreen.tsx        ← add/edit client (name/phone/email)
+│   ├── PDFPreviewScreen.tsx       ← HTML-to-PDF preview + share for quotes AND invoices; paywalled
 │   ├── SettingsScreen.tsx         ← app settings modal
 │   └── OnboardingScreen.tsx       ← shown on first launch (outside nav tree)
 ├── components/
 │   ├── TopBar.tsx                 ← shared 52px header (tag, back chevron, action icons, UPGRADE pill)
 │   ├── SectionLabel.tsx
-│   ├── SegControl.tsx
+│   ├── SegControl.tsx             ← generic segmented control; optional per-option `badge` count
+│   ├── SectionNav.tsx             ← fixed 4-item workspace section nav (segmented)
 │   ├── InputBlock.tsx
 │   ├── ToggleChip.tsx
 │   ├── WallCard.tsx               ← Paint-specific manual wall entry
 │   ├── ResultCard.tsx             ← shared results display
 │   ├── ShoppingList.tsx           ← shared shopping list
 │   ├── AddToQuoteCTA.tsx          ← "Add to Quote" button shown on all calc screens
-│   ├── LineItemSheet.tsx          ← bottom sheet for adding/editing a line item
+│   ├── LineItemSheet.tsx          ← bottom sheet for adding/editing a single line item
+│   ├── LineItemEditor.tsx         ← ledger editor (add/edit/remove rows) wrapping LineItemSheet
 │   ├── PaywallSheet.tsx           ← upgrade prompt modal — async purchase flow + ActivityIndicator loading state
-│   ├── QuoteCard.tsx              ← quote summary row in history list
+│   ├── ConvertSheet.tsx           ← quote→invoice bottom sheet (Net terms, 50% deposit)
+│   ├── StatusPill.tsx             ← unified quote/invoice status chip (STATUS_META colors)
+│   ├── Avatar.tsx                 ← initials avatar
+│   ├── HeroCard.tsx / StatCard.tsx / QuickCreateCard.tsx / ActivityRow.tsx  ← Dashboard
+│   ├── QuoteCard.tsx              ← quote card (client/total/status + convert affordance)
+│   ├── InvoiceCard.tsx / InvoiceBucket.tsx  ← Invoices section
+│   ├── ClientCard.tsx / ClientSelect.tsx    ← Clients section + client picker (inline add)
 │   └── ToolSwitcherSheet.tsx      ← bottom sheet for switching between the 7 calc tools
 ├── utils/
 │   ├── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
-│   └── calculator.test.ts         ← Jest unit tests for all calc functions
+│   ├── calculator.test.ts         ← Jest unit tests for all calc functions
+│   ├── format.ts                  ← formatMoney, money0, splitMoney, relDate, daysOverdue/UntilDue, dueDateLabel
+│   ├── workspace.ts               ← pure totals + dashboard/client rollups + invoiceView + legacy migration
+│   └── workspace.test.ts          ← Jest unit tests for workspace math + migration
 ├── ads/
 │   └── AdBanner.tsx               ← AdMob stub (renders null)
 ├── assets/
@@ -421,7 +458,7 @@ buildout/
 
 - [x] Apple Developer Account active
 - [ ] All 7 calculator tools smoke tested on device
-- [x] Quoting module complete (new quote, line items, tax, history)
+- [x] Quoting module complete — Quote Workspace with Quotes, Invoices, Clients, Dashboard (2026-05-30)
 - [x] PDF export built and paywalled (smoke test on device still needed)
 - [x] IAP wired up — RevenueCat (`react-native-purchases`); set `RC_IOS_KEY` before building
 - [ ] AdMob wired up and replace AdBanner stub

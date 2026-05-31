@@ -4,19 +4,30 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import type { QuoteStackParamList } from '../App';
-import { useQuote } from '../context/QuoteContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import TopBar from '../components/TopBar';
 import { C } from '../theme';
-import type { Quote } from '../types';
+import type { LineItem } from '../types';
 import { formatMoney as money } from '../utils/format';
+import { quoteTotals } from '../utils/workspace';
 
 type Props = NativeStackScreenProps<QuoteStackParamList, 'PDFPreview'>;
 
-function buildHTML(quote: Quote): string {
-  const subtotal = quote.lineItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-  const tax = subtotal * (quote.taxRate / 100);
-  const grand = subtotal + tax;
-  const rows = quote.lineItems.map(i => `
+interface PreviewDoc {
+  kind: 'quote' | 'invoice';
+  number: number;
+  clientName: string;
+  job: string;
+  lineItems: LineItem[];
+  taxRate: number;
+  createdAt: string;
+}
+
+function buildHTML(doc: PreviewDoc): string {
+  const label = doc.kind === 'invoice' ? 'INVOICE' : 'QUOTE';
+  const validity = doc.kind === 'invoice' ? 'Payment due on receipt' : 'Valid 30 days';
+  const { subtotal, tax, total: grand } = quoteTotals(doc);
+  const rows = doc.lineItems.map(i => `
     <tr>
       <td>${i.description}</td>
       <td style="text-align:right">${i.quantity}</td>
@@ -50,19 +61,19 @@ function buildHTML(quote: Quote): string {
       <h1>BUILDOUT<span class="period">.</span></h1>
       <div style="font-size:10px;color:#888;margin-top:4px">Drafthouse Trade Co. · (415) 555-0188</div>
     </div>
-    <div class="meta">QUOTE #BO-${quote.id.slice(-4).toUpperCase()}<br>${new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}<br>Valid 30 days</div>
+    <div class="meta">${label} #BO-${doc.number}<br>${new Date(doc.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}<br>${validity}</div>
   </div>
   <hr/>
   <div class="label">Prepared for</div>
-  <div class="client">${quote.clientName || 'Client'}</div>
-  <div class="job">${quote.jobDescription || ''}</div>
+  <div class="client">${doc.clientName || 'Client'}</div>
+  <div class="job">${doc.job || ''}</div>
   <table>
     <thead><tr><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit</th><th style="text-align:right">Total</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
   <div class="totals">
     <div class="t-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
-    <div class="t-row"><span>Tax (${quote.taxRate.toFixed(2)}%)</span><span>${money(tax)}</span></div>
+    <div class="t-row"><span>Tax (${doc.taxRate.toFixed(2)}%)</span><span>${money(tax)}</span></div>
     <div class="t-row t-grand"><span>Total Due</span><span>${money(grand)}</span></div>
   </div>
   <div class="foot">Material estimates include 10% waste. Final invoice may vary based on site conditions.</div>
@@ -70,28 +81,34 @@ function buildHTML(quote: Quote): string {
 }
 
 export default function PDFPreviewScreen({ navigation, route }: Props) {
-  const { quoteId } = route.params;
-  const { getQuote } = useQuote();
-  const quote = getQuote(quoteId);
+  const { quoteId, invoiceId } = route.params;
+  const { getQuote, getInvoice, clientName } = useWorkspace();
 
-  if (!quote) {
+  const quote = quoteId ? getQuote(quoteId) : undefined;
+  const invoice = invoiceId ? getInvoice(invoiceId) : undefined;
+
+  const doc: PreviewDoc | null = quote
+    ? { kind: 'quote', number: quote.number, clientName: clientName(quote.clientId), job: quote.job, lineItems: quote.lineItems, taxRate: quote.taxRate, createdAt: quote.createdAt }
+    : invoice
+    ? { kind: 'invoice', number: invoice.number, clientName: clientName(invoice.clientId), job: invoice.job, lineItems: invoice.lineItems, taxRate: invoice.taxRate, createdAt: invoice.createdAt }
+    : null;
+
+  if (!doc) {
     return (
       <View style={styles.container}>
         <TopBar tag="PDF Preview" onBack={() => navigation.goBack()} actions={[]} />
         <View style={styles.error}>
-          <Text style={styles.errorText}>Quote not found.</Text>
+          <Text style={styles.errorText}>Document not found.</Text>
         </View>
       </View>
     );
   }
 
-  const subtotal = quote.lineItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-  const tax = subtotal * (quote.taxRate / 100);
-  const grand = subtotal + tax;
+  const { subtotal, tax, total: grand } = quoteTotals(doc);
 
   const handleShare = async () => {
     try {
-      const html = buildHTML(quote);
+      const html = buildHTML(doc);
       const { uri } = await Print.printToFileAsync({ html, base64: false });
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
@@ -114,22 +131,22 @@ export default function PDFPreviewScreen({ navigation, route }: Props) {
               <Text style={styles.brandSub}>Drafthouse Trade Co. · (415) 555-0188</Text>
             </View>
             <View style={styles.pageMeta}>
-              <Text style={styles.pageMetaText}>QUOTE #BO-{quote.id.slice(-4).toUpperCase()}</Text>
-              <Text style={styles.pageMetaText}>{new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
-              <Text style={styles.pageMetaText}>Valid 30 days</Text>
+              <Text style={styles.pageMetaText}>{doc.kind === 'invoice' ? 'INVOICE' : 'QUOTE'} #BO-{doc.number}</Text>
+              <Text style={styles.pageMetaText}>{new Date(doc.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
+              <Text style={styles.pageMetaText}>{doc.kind === 'invoice' ? 'Payment due on receipt' : 'Valid 30 days'}</Text>
             </View>
           </View>
           <View style={styles.divider} />
           <Text style={styles.pageLabel}>Prepared for</Text>
-          <Text style={styles.pageClient}>{quote.clientName || 'Client'}</Text>
-          <Text style={styles.pageJob}>{quote.jobDescription}</Text>
+          <Text style={styles.pageClient}>{doc.clientName || 'Client'}</Text>
+          <Text style={styles.pageJob}>{doc.job}</Text>
 
           <View style={styles.tableHead}>
             {['Item', 'Qty', 'Unit', 'Total'].map((h, i) => (
               <Text key={h} style={[styles.tableHeadCell, i > 0 && styles.tableHeadCellR]}>{h}</Text>
             ))}
           </View>
-          {quote.lineItems.map(item => (
+          {doc.lineItems.map(item => (
             <View key={item.id} style={styles.tableRow}>
               <Text style={styles.tableCell} numberOfLines={1}>{item.description}</Text>
               <Text style={[styles.tableCell, styles.tableCellR]}>{item.quantity}</Text>
@@ -144,7 +161,7 @@ export default function PDFPreviewScreen({ navigation, route }: Props) {
               <Text style={styles.pdfTotalsVal}>{money(subtotal)}</Text>
             </View>
             <View style={styles.pdfTotalsRow}>
-              <Text style={styles.pdfTotalsLabel}>Tax ({quote.taxRate.toFixed(2)}%)</Text>
+              <Text style={styles.pdfTotalsLabel}>Tax ({doc.taxRate.toFixed(2)}%)</Text>
               <Text style={styles.pdfTotalsVal}>{money(tax)}</Text>
             </View>
             <View style={[styles.pdfTotalsRow, styles.pdfTotalsGrand]}>

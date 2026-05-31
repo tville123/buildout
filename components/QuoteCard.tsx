@@ -1,48 +1,55 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { C } from '../theme';
 import type { Quote } from '../types';
-import { formatMoney } from '../utils/format';
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - d.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
+import { money0, relDate } from '../utils/format';
+import StatusPill from './StatusPill';
 
 interface QuoteCardProps {
   quote: Quote;
+  clientName: string;
+  invoiced: boolean;
   onPress: () => void;
+  onConvert?: (quote: Quote) => void;
 }
 
-export default function QuoteCard({ quote, onPress }: QuoteCardProps) {
-  const subtotal = quote.lineItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-  const total = subtotal + subtotal * (quote.taxRate / 100);
-  const isSent = quote.status === 'sent';
+export default function QuoteCard({ quote, clientName, invoiced, onPress, onConvert }: QuoteCardProps) {
+  const ready = quote.status === 'approved' && !invoiced;
+  const showInvoiced = quote.status === 'approved' && invoiced;
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={[styles.spine, isSent ? styles.spineSent : styles.spineDraft]} />
-      <View style={styles.body}>
-        <View style={styles.row1}>
-          <Text style={styles.client} numberOfLines={1}>{quote.clientName || 'Untitled Quote'}</Text>
-          <Text style={styles.total}>{formatMoney(total)}</Text>
-        </View>
-        <Text style={styles.job} numberOfLines={1}>{quote.jobDescription || 'No description'}</Text>
-        <View style={styles.meta}>
-          <View style={[styles.tag, isSent ? styles.tagSent : styles.tagDraft]}>
-            <Text style={[styles.tagText, isSent ? styles.tagTextSent : styles.tagTextDraft]}>
-              {isSent ? 'Sent' : 'Draft'}
-            </Text>
-          </View>
-          <Text style={styles.metaText}>{quote.lineItems.length} item{quote.lineItems.length !== 1 ? 's' : ''}</Text>
-          <View style={styles.metaSep} />
-          <Text style={styles.metaText}>{formatDate(quote.updatedAt)}</Text>
-        </View>
+      <View style={styles.head}>
+        <Text style={styles.client} numberOfLines={1}>{clientName}</Text>
+        <Text style={styles.total}>{money0(quote.total)}</Text>
       </View>
+      <Text style={styles.job} numberOfLines={1}>{quote.job || 'No description'}</Text>
+      <View style={styles.meta}>
+        <Text style={styles.metaText}>#{quote.number}</Text>
+        <View style={styles.metaSep} />
+        <Text style={styles.metaText}>{relDate(quote.createdAt)}</Text>
+        <View style={{ flex: 1 }} />
+        <StatusPill status={quote.status} size={8.5} />
+      </View>
+
+      {ready && (
+        <View style={styles.convertRow}>
+          <TouchableOpacity
+            style={styles.convertBtn}
+            onPress={() => onConvert?.(quote)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-forward" size={13} color={C.yellow} />
+            <Text style={styles.convertText}>Convert to Invoice</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {showInvoiced && (
+        <View style={styles.invoicedNote}>
+          <Ionicons name="checkmark-circle-outline" size={12} color="#4caf7d" />
+          <Text style={styles.invoicedText}>Invoiced</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -52,88 +59,89 @@ const styles = StyleSheet.create({
     backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: 12,
-    flexDirection: 'row',
-    overflow: 'hidden',
-  },
-  spine: {
-    width: 3,
-  },
-  spineSent: {
-    backgroundColor: C.yellow,
-  },
-  spineDraft: {
-    backgroundColor: C.textDim,
-  },
-  body: {
-    flex: 1,
+    borderRadius: 14,
     padding: 14,
-    gap: 4,
+    paddingHorizontal: 16,
   },
-  row1: {
+  head: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 12,
   },
   client: {
     fontFamily: 'IBMPlexSans_500Medium',
-    fontSize: 15.5,
+    fontSize: 15,
     color: C.text,
     flex: 1,
   },
   total: {
     fontFamily: 'BebasNeue_400Regular',
-    fontSize: 22,
+    fontSize: 24,
     color: C.yellow,
     letterSpacing: 0.5,
-    marginLeft: 12,
   },
   job: {
     fontFamily: 'IBMPlexSans_300Light',
     fontSize: 12,
     color: C.textMid,
+    marginTop: 4,
   },
   meta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 4,
-  },
-  tag: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 4,
-    borderWidth: 1,
-  },
-  tagSent: {
-    borderColor: C.yellow,
-    backgroundColor: 'rgba(245,200,66,0.08)',
-  },
-  tagDraft: {
-    borderColor: C.border,
-    backgroundColor: 'transparent',
-  },
-  tagText: {
-    fontFamily: 'IBMPlexSans_500Medium',
-    fontSize: 9,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-  },
-  tagTextSent: {
-    color: C.yellow,
-  },
-  tagTextDraft: {
-    color: C.textMid,
+    gap: 7,
+    marginTop: 8,
   },
   metaText: {
-    fontFamily: 'IBMPlexSans_400Regular',
-    fontSize: 11,
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 10,
     color: C.textDim,
   },
   metaSep: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
+    width: 2,
+    height: 2,
+    borderRadius: 1,
     backgroundColor: C.textDim,
+  },
+  convertRow: {
+    marginTop: 11,
+    paddingTop: 11,
+    borderTopWidth: 1,
+    borderTopColor: C.border,
+    flexDirection: 'row',
+  },
+  convertBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(245,200,66,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,200,66,0.4)',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 13,
+  },
+  convertText: {
+    fontFamily: 'IBMPlexSans_500Medium',
+    fontSize: 10.5,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: C.yellow,
+  },
+  invoicedNote: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: C.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  invoicedText: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 10,
+    letterSpacing: 0.4,
+    color: '#4caf7d',
   },
 });

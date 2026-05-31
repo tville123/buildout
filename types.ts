@@ -6,14 +6,46 @@ export interface LineItem {
   source?: string;
 }
 
+export interface Client {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  initials: string;
+}
+
+export type QuoteStatus = 'draft' | 'sent' | 'approved';
+
 export interface Quote {
   id: string;
-  clientName: string;
-  jobDescription: string;
+  number: number;
+  clientId: string | null;     // null = unassigned draft (e.g. created from a calculator)
+  job: string;
   lineItems: LineItem[];
   taxRate: number;
-  status: 'draft' | 'sent';
+  total: number;               // stored snapshot = subtotal + tax
+  status: QuoteStatus;
   updatedAt: string;
+  createdAt: string;
+}
+
+// Stored status is only pending | paid; 'overdue' is DERIVED (pending && dueAt < now).
+export type InvoiceStatus = 'pending' | 'paid';
+export type InvoiceView = 'overdue' | 'pending' | 'paid';
+export type PaymentTerm = 7 | 15 | 30;
+
+export interface Invoice {
+  id: string;
+  number: number;
+  clientId: string | null;
+  quoteId?: string;            // set when billed from a quote
+  job: string;
+  amount: number;
+  lineItems: LineItem[];
+  taxRate: number;
+  status: InvoiceStatus;
+  dueAt: string;
+  paidAt?: string;
   createdAt: string;
 }
 

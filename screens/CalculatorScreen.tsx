@@ -9,6 +9,7 @@ import { navigateToSettings } from '../navigationRef';
 import { C } from '../theme';
 import TopBar from '../components/TopBar';
 import ToolSwitcherSheet from '../components/ToolSwitcherSheet';
+import AdBanner from '../ads/AdBanner';
 
 import PaintScreen from './PaintScreen';
 import TileScreen from './TileScreen';
@@ -52,6 +53,7 @@ export default function CalculatorScreen({ route }: Props) {
         }}
       />
       <CalcComponent onAddToQuote={addToQuote} />
+      <AdBanner />
       <ToolSwitcherSheet
         visible={showSwitcher}
         active={tool}

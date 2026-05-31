@@ -63,51 +63,56 @@ npx expo export
 
 ```
 buildout/
-├── App.tsx                   ← root: RootStack → MainTabs → CalcStack / QuoteStack
-├── navigationRef.ts          ← global nav ref + navigateToSettings()
-├── theme.ts                  ← color tokens + shared constants
-├── styles.ts                 ← shared StyleSheet styles
-├── types.ts                  ← shared TypeScript types (Wall, Quote, LineItem, ToolName…)
-├── index.ts                  ← entry point
+├── App.tsx                        ← root: RootStack → MainTabs → CalcStack / QuoteStack
+├── navigationRef.ts               ← global nav ref + navigateToSettings()
+├── theme.ts                       ← C (color tokens) + WALL_NAMES constant
+├── styles.ts                      ← shared StyleSheet styles
+├── types.ts                       ← Wall, Client, Quote, Invoice, InvoiceView, LineItem, ToolName…
+├── index.ts                       ← entry point
 ├── screens/
-│   ├── CalculatorScreen.tsx  ← hosts all 7 tools + ToolSwitcherSheet
-│   ├── PaintScreen.tsx
-│   ├── TileScreen.tsx
-│   ├── GroutScreen.tsx
-│   ├── LVPScreen.tsx
-│   ├── CarpetScreen.tsx
-│   ├── StairsScreen.tsx
-│   ├── DrywallScreen.tsx
-│   ├── QuoteHistoryScreen.tsx
-│   ├── QuoteBuilderScreen.tsx
-│   ├── PDFPreviewScreen.tsx
+│   ├── CalculatorScreen.tsx       ← hosts all 7 tools + ToolSwitcherSheet
+│   ├── PaintScreen.tsx / TileScreen.tsx / GroutScreen.tsx
+│   ├── LVPScreen.tsx / CarpetScreen.tsx / StairsScreen.tsx / DrywallScreen.tsx
+│   ├── WorkspaceScreen.tsx        ← Quote-tab host: TopBar + SectionNav + 4 sections
+│   ├── sections/                  ← DashboardSection, QuotesSection, InvoicesSection, ClientsSection
+│   ├── QuoteFormScreen.tsx        ← create/edit quote (client select, line items, tax, status)
+│   ├── NewInvoiceScreen.tsx       ← new invoice, optional quote prefill
+│   ├── ClientDetailScreen.tsx     ← avatar header, quotes/invoices tabs
+│   ├── InvoiceDetailScreen.tsx    ← line-item breakdown, Mark as Paid
+│   ├── AddClientScreen.tsx        ← add/edit client
+│   ├── PDFPreviewScreen.tsx       ← HTML-to-PDF for quotes + invoices; paywalled
 │   ├── SettingsScreen.tsx
 │   └── OnboardingScreen.tsx
 ├── components/
-│   ├── TopBar.tsx            ← shared 52px header
-│   ├── SectionLabel.tsx
-│   ├── SegControl.tsx
-│   ├── InputBlock.tsx
-│   ├── ToggleChip.tsx
-│   ├── WallCard.tsx          ← Paint-specific
-│   ├── ResultCard.tsx        ← shared results display
-│   ├── ShoppingList.tsx      ← shared shopping list
-│   ├── AddToQuoteCTA.tsx
-│   ├── LineItemSheet.tsx
-│   ├── PaywallSheet.tsx      ← async purchase flow + loading state
-│   ├── QuoteCard.tsx
+│   ├── TopBar.tsx                 ← shared 52px header (tag, back, actions, UPGRADE pill)
+│   ├── SectionLabel.tsx / SegControl.tsx / SectionNav.tsx
+│   ├── InputBlock.tsx / ToggleChip.tsx / WallCard.tsx
+│   ├── ResultCard.tsx / ShoppingList.tsx
+│   ├── AddToQuoteCTA.tsx          ← shown on all calc screens
+│   ├── LineItemSheet.tsx / LineItemEditor.tsx
+│   ├── PaywallSheet.tsx / ConvertSheet.tsx
+│   ├── StatusPill.tsx / Avatar.tsx
+│   ├── HeroCard.tsx / StatCard.tsx / QuickCreateCard.tsx / ActivityRow.tsx  ← Dashboard
+│   ├── QuoteCard.tsx / InvoiceCard.tsx / InvoiceBucket.tsx
+│   ├── ClientCard.tsx / ClientSelect.tsx
 │   └── ToolSwitcherSheet.tsx
 ├── context/
-│   ├── PaidContext.tsx       ← RevenueCat IAP — usePaid() + usePaidActions()
-│   └── QuoteContext.tsx      ← AsyncStorage-backed quote CRUD
+│   ├── PaidContext.tsx            ← RevenueCat IAP — usePaid() + usePaidActions()
+│   ├── WorkspaceContext.tsx       ← clients/quotes/invoices CRUD + derived stats; useWorkspace()
+│   └── ToastContext.tsx           ← global pill toast — useToast() → showToast(msg)
 ├── utils/
-│   └── calculator.ts         ← all math helpers
+│   ├── calculator.ts              ← all calc math helpers
+│   ├── calculator.test.ts
+│   ├── workspace.ts               ← totals, dashboard rollups, invoiceView, migration
+│   ├── workspace.test.ts
+│   ├── format.ts                  ← formatMoney, relDate, dueDateLabel…
+│   └── uuid.ts
 ├── ads/
-│   └── AdBanner.tsx          ← AdMob stub (renders null until wired)
-├── app.json                  ← bundle ID: com.drafthouse.buildout
-├── eas.json                  ← EAS build profiles
+│   └── AdBanner.tsx               ← AdMob stub (renders null until wired)
+├── app.json                       ← bundle ID: com.drafthouse.buildout
+├── eas.json                       ← EAS build profiles
 └── assets/
-    ├── icon.png              ← must be 1024×1024 for App Store
+    ├── icon.png                   ← must be 1024×1024 for App Store
     └── splash-icon.png
 ```
 
@@ -169,10 +174,11 @@ CALCULATORS INCLUDED
 • Stairs — tread and riser area with 15% stair-cut waste
 • Drywall — sheets, joint compound, tape, and screws
 
-QUOTE BUILDER
-• Add line items, set quantities and unit prices
-• Optional tax rate, auto-calculated totals
-• Export a professional PDF quote (Pro)
+QUOTE & INVOICE WORKSPACE
+• Build quotes with line items, quantities, and unit prices
+• Convert approved quotes to invoices in one tap
+• Track clients, payment status, and outstanding amounts
+• Export professional PDF quotes and invoices (Pro)
 
 No account required. All data stays on your device — zero data collected.
 Free with ads. One-time $2.99 upgrade removes ads and unlocks PDF export.
@@ -216,6 +222,7 @@ Host on GitHub Pages, Notion, or any free static host.
 
 - [x] Apple Developer Account active (Manuel Villalobos | 1415684764)
 - [x] Wire up IAP — RevenueCat fully configured; product + offering set up; purchase flow tested; swap for production `appl_` key before App Store build
+- [x] Quote Workspace complete — Quotes, Invoices, Clients, Dashboard with quote→invoice conversion
 - [ ] App icon — 1024×1024 PNG (current asset needs to be replaced)
 - [ ] Wire up AdMob and replace `AdBanner.tsx` stub
 - [ ] Test on real device via TestFlight

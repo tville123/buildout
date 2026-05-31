@@ -4,7 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CalculateStackParamList } from '../App';
 import type { ToolName } from '../types';
-import { useQuote } from '../context/QuoteContext';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { navigateToSettings } from '../navigationRef';
 import { C } from '../theme';
 import TopBar from '../components/TopBar';
@@ -37,7 +37,7 @@ const SCREENS: Record<ToolName, ComponentType<CalcScreenProps>> = {
 export default function CalculatorScreen({ route }: Props) {
   const [tool, setTool] = useState<ToolName>(route.params?.tool ?? 'Paint');
   const [showSwitcher, setShowSwitcher] = useState(false);
-  const { addToQuote } = useQuote();
+  const { addToQuote } = useWorkspace();
 
   const CalcComponent = SCREENS[tool];
 

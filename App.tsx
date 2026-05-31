@@ -22,13 +22,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { C } from './theme';
 import { PaidProvider } from './context/PaidContext';
-import { QuoteProvider, useQuote } from './context/QuoteContext';
+import { WorkspaceProvider, useWorkspace } from './context/WorkspaceContext';
+import { ToastProvider } from './context/ToastContext';
 import { navigationRef, type RootStackParamList } from './navigationRef';
 import type { ToolName } from './types';
 
 import CalculatorScreen from './screens/CalculatorScreen';
-import QuoteHistoryScreen from './screens/QuoteHistoryScreen';
-import QuoteBuilderScreen from './screens/QuoteBuilderScreen';
+import WorkspaceScreen from './screens/WorkspaceScreen';
+import QuoteFormScreen from './screens/QuoteFormScreen';
+import ClientDetailScreen from './screens/ClientDetailScreen';
+import InvoiceDetailScreen from './screens/InvoiceDetailScreen';
+import NewInvoiceScreen from './screens/NewInvoiceScreen';
+import AddClientScreen from './screens/AddClientScreen';
 import PDFPreviewScreen from './screens/PDFPreviewScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
@@ -39,10 +44,16 @@ export type CalculateStackParamList = {
   Calculator: { tool?: ToolName };
 };
 
+export type WorkspaceSection = 'dashboard' | 'quotes' | 'invoices' | 'clients';
+
 export type QuoteStackParamList = {
-  QuoteHistory: undefined;
-  QuoteBuilder: { quoteId: string };
-  PDFPreview: { quoteId: string };
+  Workspace: { section?: WorkspaceSection } | undefined;
+  ClientDetail: { clientId: string };
+  InvoiceDetail: { invoiceId: string };
+  QuoteForm: { quoteId?: string } | undefined;
+  NewInvoice: { fromQuoteId?: string } | undefined;
+  AddClient: { clientId?: string } | undefined;
+  PDFPreview: { quoteId?: string; invoiceId?: string };
 };
 
 type MainTabParamList = {
@@ -68,19 +79,24 @@ function CalculateNavigator() {
 function QuoteNavigator() {
   return (
     <QuoteStack.Navigator screenOptions={{ headerShown: false }}>
-      <QuoteStack.Screen name="QuoteHistory" component={QuoteHistoryScreen} />
-      <QuoteStack.Screen name="QuoteBuilder" component={QuoteBuilderScreen} />
+      <QuoteStack.Screen name="Workspace" component={WorkspaceScreen} />
+      <QuoteStack.Screen name="ClientDetail" component={ClientDetailScreen} />
+      <QuoteStack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+      <QuoteStack.Screen name="QuoteForm" component={QuoteFormScreen} />
+      <QuoteStack.Screen name="NewInvoice" component={NewInvoiceScreen} />
+      <QuoteStack.Screen name="AddClient" component={AddClientScreen} />
       <QuoteStack.Screen name="PDFPreview" component={PDFPreviewScreen} />
     </QuoteStack.Navigator>
   );
 }
 
 function MainTabs() {
-  const { quotes } = useQuote();
+  const { quotes } = useWorkspace();
   const quoteCount = quotes.length;
 
   return (
     <MainTab.Navigator
+      initialRouteName="Quote"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: C.yellow,
@@ -141,21 +157,23 @@ export default function App() {
 
   return (
     <PaidProvider>
-      <QuoteProvider>
-        <View style={{ flex: 1, backgroundColor: C.bg }}>
-          <StatusBar barStyle="light-content" backgroundColor={C.bg} />
-          <NavigationContainer ref={navigationRef}>
-            <RootStack.Navigator screenOptions={{ headerShown: false }}>
-              <RootStack.Screen name="Main" component={MainTabs} />
-              <RootStack.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{ presentation: 'modal' }}
-              />
-            </RootStack.Navigator>
-          </NavigationContainer>
-        </View>
-      </QuoteProvider>
+      <WorkspaceProvider>
+        <ToastProvider>
+          <View style={{ flex: 1, backgroundColor: C.bg }}>
+            <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+            <NavigationContainer ref={navigationRef}>
+              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                <RootStack.Screen name="Main" component={MainTabs} />
+                <RootStack.Screen
+                  name="Settings"
+                  component={SettingsScreen}
+                  options={{ presentation: 'modal' }}
+                />
+              </RootStack.Navigator>
+            </NavigationContainer>
+          </View>
+        </ToastProvider>
+      </WorkspaceProvider>
     </PaidProvider>
   );
 }

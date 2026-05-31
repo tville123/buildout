@@ -23,7 +23,7 @@ import { quoteTotals } from '../utils/workspace';
 type Props = NativeStackScreenProps<QuoteStackParamList, 'QuoteForm'>;
 
 export default function QuoteFormScreen({ navigation, route }: Props) {
-  const { getQuote, updateQuote, clientName } = useWorkspace();
+  const { getQuote, updateQuote, deleteQuote, clientName } = useWorkspace();
   const isPaid = usePaid();
   const { purchase } = usePaidActions();
   const { showToast } = useToast();
@@ -61,7 +61,8 @@ export default function QuoteFormScreen({ navigation, route }: Props) {
   const handleItems = (items: LineItem[]) => updateQuote(quoteId, { lineItems: items });
 
   const handleExport = () => {
-    saveJob(); saveTax();
+    const cleanedItems = lineItems.filter(it => it.description.trim() || it.unitPrice > 0);
+    updateQuote(quoteId, { job, taxRate: parseFloat(taxRate) || 0, lineItems: cleanedItems });
     if (isPaid) navigation.push('PDFPreview', { quoteId });
     else setShowPaywall(true);
   };
@@ -70,7 +71,14 @@ export default function QuoteFormScreen({ navigation, route }: Props) {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <TopBar
         tag={quote.clientId ? clientName(quote.clientId) : 'New Quote'}
-        onBack={() => { saveJob(); saveTax(); navigation.goBack(); }}
+        onBack={() => {
+          saveJob(); saveTax();
+          const meaningfulItems = quote.lineItems.filter(it => it.description.trim() || it.unitPrice > 0);
+          if (!quote.clientId && !job.trim() && meaningfulItems.length === 0) {
+            deleteQuote(quoteId);
+          }
+          navigation.goBack();
+        }}
         actions={['share', 'more']}
         onActionPress={(a) => { if (a === 'settings') navigateToSettings(); }}
       />

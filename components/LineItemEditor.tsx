@@ -1,117 +1,194 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { C } from '../theme';
 import type { LineItem } from '../types';
-import { formatMoney } from '../utils/format';
+import { money0 } from '../utils/format';
 import { uuid } from '../utils/uuid';
-import LineItemSheet from './LineItemSheet';
 
 interface Props {
   items: LineItem[];
   onChange: (items: LineItem[]) => void;
 }
 
-// Shared ledger editor — add / edit / remove line items. Per-row editing reuses
-// the existing LineItemSheet bottom sheet.
+type RawRow = { desc: string; qty: string; price: string };
+
+function initRaw(it: LineItem): RawRow {
+  return {
+    desc: it.description,
+    qty: it.quantity === 0 ? '' : String(it.quantity),
+    price: it.unitPrice === 0 ? '' : String(it.unitPrice),
+  };
+}
+
 export default function LineItemEditor({ items, onChange }: Props) {
-  const [editing, setEditing] = useState<LineItem | undefined>(undefined);
-  const [showSheet, setShowSheet] = useState(false);
+  const [raw, setRaw] = useState<Record<string, RawRow>>(() =>
+    Object.fromEntries(items.map(it => [it.id, initRaw(it)]))
+  );
 
-  const openNew = () => { setEditing(undefined); setShowSheet(true); };
-  const openEdit = (item: LineItem) => { setEditing(item); setShowSheet(true); };
+  const getRaw = (id: string): RawRow =>
+    raw[id] ?? { desc: '', qty: '', price: '' };
 
-  const handleSave = (data: Omit<LineItem, 'id'>) => {
-    setShowSheet(false);
-    onChange(editing
-      ? items.map(i => i.id === editing.id ? { ...data, id: editing.id } : i)
-      : [...items, { ...data, id: uuid() }]);
+  const setField = (id: string, field: keyof RawRow, val: string) =>
+    setRaw(prev => ({ ...prev, [id]: { ...(prev[id] ?? { desc: '', qty: '', price: '' }), [field]: val } }));
+
+  const commit = (id: string) => {
+    const r = getRaw(id);
+    onChange(items.map(it =>
+      it.id !== id ? it : {
+        ...it,
+        description: r.desc,
+        quantity: parseFloat(r.qty) || 0,
+        unitPrice: parseFloat(r.price) || 0,
+      }
+    ));
   };
 
-  const handleDelete = (id: string) => onChange(items.filter(i => i.id !== id));
+  const add = () => {
+    const id = uuid();
+    setRaw(prev => ({ ...prev, [id]: { desc: '', qty: '1', price: '' } }));
+    onChange([...items, { id, description: '', quantity: 1, unitPrice: 0 }]);
+  };
+
+  const remove = (id: string) => {
+    setRaw(prev => { const next = { ...prev }; delete next[id]; return next; });
+    onChange(items.filter(it => it.id !== id));
+  };
 
   return (
     <View>
+      {items.length > 0 && (
+        <View style={styles.header}>
+          <Text style={[styles.hCell, { flex: 1 }]}>Description</Text>
+          <Text style={[styles.hCell, styles.hRight, { width: 44 }]}>Qty</Text>
+          <Text style={[styles.hCell, styles.hRight, { width: 62 }]}>Unit</Text>
+          <Text style={[styles.hCell, styles.hRight, { width: 56 }]}>Total</Text>
+          <View style={{ width: 32 }} />
+        </View>
+      )}
+
       {items.map(item => {
-        const total = item.quantity * item.unitPrice;
+        const r = getRaw(item.id);
+        const lineTotal = (parseFloat(r.qty) || 0) * (parseFloat(r.price) || 0);
         return (
           <View key={item.id} style={styles.row}>
-            <TouchableOpacity style={styles.rowMain} onPress={() => openEdit(item)} activeOpacity={0.7}>
-              <View style={styles.rowTop}>
-                <Text style={styles.desc} numberOfLines={1}>{item.description}</Text>
-                <Text style={styles.total}>{formatMoney(total)}</Text>
-              </View>
-              <View style={styles.rowBottom}>
-                <Text style={styles.qty}>{item.quantity} × {formatMoney(item.unitPrice)}</Text>
-                {item.source ? (
-                  <View style={styles.srcPill}><Text style={styles.srcText}>{item.source} →</Text></View>
-                ) : null}
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.del} onPress={() => handleDelete(item.id)} activeOpacity={0.7}>
-              <Ionicons name="close" size={15} color={C.textDim} />
+            <TextInput
+              style={[styles.cell, styles.descInput]}
+              value={r.desc}
+              onChangeText={v => setField(item.id, 'desc', v)}
+              onEndEditing={() => commit(item.id)}
+              placeholder="Item or labor"
+              placeholderTextColor={C.textDim}
+              returnKeyType="next"
+            />
+            <TextInput
+              style={[styles.cell, styles.monoInput, { width: 44 }]}
+              value={r.qty}
+              onChangeText={v => setField(item.id, 'qty', v)}
+              onEndEditing={() => commit(item.id)}
+              placeholder="1"
+              placeholderTextColor={C.textDim}
+              keyboardType="decimal-pad"
+              textAlign="right"
+            />
+            <TextInput
+              style={[styles.cell, styles.monoInput, { width: 62 }]}
+              value={r.price}
+              onChangeText={v => setField(item.id, 'price', v)}
+              onEndEditing={() => commit(item.id)}
+              placeholder="0"
+              placeholderTextColor={C.textDim}
+              keyboardType="decimal-pad"
+              textAlign="right"
+            />
+            <Text style={[styles.cell, styles.totalCell, { width: 56 }]}>
+              {money0(lineTotal)}
+            </Text>
+            <TouchableOpacity style={styles.del} onPress={() => remove(item.id)} activeOpacity={0.7}>
+              <Ionicons name="close" size={14} color={C.textDim} />
             </TouchableOpacity>
           </View>
         );
       })}
 
-      <TouchableOpacity style={styles.addBtn} onPress={openNew} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.addBtn} onPress={add} activeOpacity={0.7}>
         <Ionicons name="add" size={16} color={C.textMid} />
         <Text style={styles.addText}>Add line item</Text>
       </TouchableOpacity>
-
-      <LineItemSheet
-        visible={showSheet}
-        item={editing}
-        onClose={() => setShowSheet(false)}
-        onSave={handleSave}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingBottom: 6,
+    gap: 4,
+  },
+  hCell: {
+    fontFamily: 'IBMPlexSans_500Medium',
+    fontSize: 9,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: C.textDim,
+  },
+  hRight: {
+    textAlign: 'right',
+  },
   row: {
     flexDirection: 'row',
-    alignItems: 'stretch',
+    alignItems: 'center',
     backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 10,
-    marginBottom: 8,
-    overflow: 'hidden',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
+    marginBottom: 6,
   },
-  rowMain: {
+  cell: {
+    color: C.text,
+    padding: 0,
+  },
+  descInput: {
     flex: 1,
-    padding: 14,
-    gap: 6,
+    fontFamily: 'IBMPlexSans_400Regular',
+    fontSize: 13,
   },
-  rowTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 8,
+  monoInput: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 12,
+    color: C.text,
   },
-  desc: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13.5, color: C.text, flex: 1 },
-  total: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 13.5, color: C.yellow },
-  rowBottom: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  qty: { fontFamily: 'IBMPlexMono_400Regular', fontSize: 11, color: C.textDim },
-  srcPill: {
-    backgroundColor: 'rgba(245,200,66,0.08)',
-    borderWidth: 1, borderColor: 'rgba(245,200,66,0.15)',
-    borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2,
+  totalCell: {
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: 12,
+    color: C.yellow,
+    textAlign: 'right',
   },
-  srcText: { fontFamily: 'IBMPlexMono_400Regular', fontSize: 9, color: C.yellow, letterSpacing: 0.5 },
   del: {
-    width: 40,
+    width: 32,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderLeftWidth: 1,
-    borderLeftColor: C.border,
   },
   addBtn: {
-    borderWidth: 1, borderStyle: 'dashed', borderColor: C.border, borderRadius: 10,
-    paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: C.border,
+    borderRadius: 10,
+    paddingVertical: 14,
   },
-  addText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: C.textMid },
+  addText: {
+    fontFamily: 'IBMPlexSans_400Regular',
+    fontSize: 13,
+    color: C.textMid,
+  },
 });

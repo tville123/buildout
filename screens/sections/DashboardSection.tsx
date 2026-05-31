@@ -58,8 +58,7 @@ export default function DashboardSection({ navigation, goToSection }: { navigati
               clientName={clientName(a.clientId)}
               isLast={i === recentActivity.length - 1}
               onPress={() => {
-                if (a.kind === 'invoice') navigation.push('InvoiceDetail', { invoiceId: a.id });
-                else navigation.push('QuoteForm', { quoteId: a.id });
+                if (a.clientId) navigation.push('ClientDetail', { clientId: a.clientId });
               }}
             />
           ))}

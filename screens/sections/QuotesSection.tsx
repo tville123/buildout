@@ -63,7 +63,9 @@ export default function QuotesSection({ navigation, goToSection }: { navigation:
             quote={q}
             clientName={clientName(q.clientId)}
             invoiced={invoicedIds.has(q.id)}
-            onPress={() => navigation.push('QuoteForm', { quoteId: q.id })}
+            onPress={() => q.clientId
+                ? navigation.push('ClientDetail', { clientId: q.clientId })
+                : navigation.push('QuoteForm', { quoteId: q.id })}
             onConvert={(quote) => setConverting(quote)}
           />
         )) : (

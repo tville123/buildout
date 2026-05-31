@@ -11,16 +11,17 @@ interface QuoteCardProps {
   invoiced: boolean;
   onPress: () => void;
   onConvert?: (quote: Quote) => void;
+  headLabel?: string;
 }
 
-export default function QuoteCard({ quote, clientName, invoiced, onPress, onConvert }: QuoteCardProps) {
+export default function QuoteCard({ quote, clientName, invoiced, onPress, onConvert, headLabel }: QuoteCardProps) {
   const ready = quote.status === 'approved' && !invoiced;
   const showInvoiced = quote.status === 'approved' && invoiced;
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.head}>
-        <Text style={styles.client} numberOfLines={1}>{clientName}</Text>
+        <Text style={styles.client} numberOfLines={1}>{headLabel ?? clientName}</Text>
         <Text style={styles.total}>{money0(quote.total)}</Text>
       </View>
       <Text style={styles.job} numberOfLines={1}>{quote.job || 'No description'}</Text>

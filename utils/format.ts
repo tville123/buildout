@@ -37,6 +37,11 @@ export function daysUntilDue(dueAt: string): number {
   return Math.round((new Date(dueAt).getTime() - Date.now()) / DAY);
 }
 
+// Whole-dollar for integers, two-decimal for fractional unit prices.
+export function smartMoney(n: number): string {
+  return Number.isInteger(n) ? money0(n) : formatMoney(n);
+}
+
 // Absolute date label ("May 30, 2026") for due dates / paid dates.
 export function dueDateLabel(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });

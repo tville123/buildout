@@ -96,6 +96,7 @@ function MainTabs() {
 
   return (
     <MainTab.Navigator
+      initialRouteName="Quote"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: C.yellow,

@@ -5,7 +5,7 @@ import type { QuoteStackParamList } from '../App';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useToast } from '../context/ToastContext';
 import { C } from '../theme';
-import { formatMoney as money, daysOverdue, daysUntilDue, dueDateLabel } from '../utils/format';
+import { money0, smartMoney, formatMoney, daysOverdue, daysUntilDue, dueDateLabel } from '../utils/format';
 import { invoiceView, invoiceTotals } from '../utils/workspace';
 import TopBar from '../components/TopBar';
 import StatusPill from '../components/StatusPill';
@@ -65,19 +65,19 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
             <View key={item.id} style={styles.breakRow}>
               <View style={styles.breakDesc}>
                 <Text style={styles.breakD}>{item.description}</Text>
-                <Text style={styles.breakQ}>{item.quantity} × {money(item.unitPrice)}</Text>
+                <Text style={styles.breakQ}>{item.quantity} × {smartMoney(item.unitPrice)}</Text>
               </View>
-              <Text style={styles.breakAmt}>{money(item.quantity * item.unitPrice)}</Text>
+              <Text style={styles.breakAmt}>{money0(item.quantity * item.unitPrice)}</Text>
             </View>
           ))}
           <View style={styles.breakTotals}>
-            <View style={styles.trow}><Text style={styles.trowK}>Subtotal</Text><Text style={styles.trowV}>{money(subtotal)}</Text></View>
+            <View style={styles.trow}><Text style={styles.trowK}>Subtotal</Text><Text style={styles.trowV}>{formatMoney(subtotal)}</Text></View>
             {invoice.taxRate > 0 && (
-              <View style={styles.trow}><Text style={styles.trowK}>Tax ({invoice.taxRate}%)</Text><Text style={styles.trowV}>{money(tax)}</Text></View>
+              <View style={styles.trow}><Text style={styles.trowK}>Tax ({invoice.taxRate}%)</Text><Text style={styles.trowV}>{formatMoney(tax)}</Text></View>
             )}
             <View style={[styles.trow, styles.grand]}>
               <Text style={styles.grandK}>Total</Text>
-              <Text style={styles.grandV}>{money(total)}</Text>
+              <Text style={styles.grandV}>{formatMoney(total)}</Text>
             </View>
           </View>
         </View>

@@ -53,12 +53,13 @@ export default function NewInvoiceScreen({ navigation, route }: Props) {
 
   const handleCreate = () => {
     if (!canSave) return;
+    const cleanedItems = lineItems.filter(it => it.description.trim() || it.unitPrice > 0);
     const inv = createInvoice({
       clientId,
       quoteId: fromQuoteId ?? undefined,
       job: job.trim(),
       amount: total,
-      lineItems,
+      lineItems: cleanedItems,
       taxRate: parseFloat(taxRate) || 0,
       status: 'pending',
       dueAt: new Date(Date.now() + term * 86400000).toISOString(),

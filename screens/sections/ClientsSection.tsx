@@ -54,7 +54,7 @@ export default function ClientsSection({ navigation }: { navigation: Nav }) {
               key={c.id}
               client={c}
               lastJob={lastJob}
-              billed={t.invoiced}
+              billed={t.invoiced || t.quoted}
               jobCount={t.jobCount}
               onPress={() => navigation.push('ClientDetail', { clientId: c.id })}
             />

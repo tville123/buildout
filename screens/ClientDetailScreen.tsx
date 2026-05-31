@@ -7,19 +7,22 @@ import { useWorkspace } from '../context/WorkspaceContext';
 import { useToast } from '../context/ToastContext';
 import { C } from '../theme';
 import { money0 } from '../utils/format';
+import type { Quote } from '../types';
 import TopBar from '../components/TopBar';
 import Avatar from '../components/Avatar';
 import SegControl from '../components/SegControl';
 import QuoteCard from '../components/QuoteCard';
 import InvoiceCard from '../components/InvoiceCard';
+import ConvertSheet from '../components/ConvertSheet';
 
 type Props = NativeStackScreenProps<QuoteStackParamList, 'ClientDetail'>;
 
 export default function ClientDetailScreen({ navigation, route }: Props) {
   const { clientId } = route.params;
-  const { getClient, clientTotals, invoicedIds, markInvoicePaid } = useWorkspace();
+  const { getClient, clientTotals, invoicedIds, markInvoicePaid, convertQuoteToInvoice, nextInvoiceNumber } = useWorkspace();
   const { showToast } = useToast();
   const [tab, setTab] = useState<'quotes' | 'invoices'>('quotes');
+  const [converting, setConverting] = useState<Quote | null>(null);
 
   const client = getClient(clientId);
   if (!client) {
@@ -72,8 +75,10 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
                 key={q.id}
                 quote={q}
                 clientName={client.name}
+                headLabel={q.job || 'No description'}
                 invoiced={invoicedIds.has(q.id)}
                 onPress={() => navigation.push('QuoteForm', { quoteId: q.id })}
+                onConvert={(quote) => setConverting(quote)}
               />
             )) : <Text style={styles.empty}>No quotes for this client yet.</Text>
           ) : (
@@ -89,6 +94,21 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
           )}
         </View>
       </ScrollView>
+
+      {converting && (
+        <ConvertSheet
+          quote={converting}
+          clientName={client.name}
+          invoiceNumber={nextInvoiceNumber}
+          onClose={() => setConverting(null)}
+          onCreate={({ termDays, deposit }) => {
+            const inv = convertQuoteToInvoice(converting.id, { termDays, deposit });
+            setConverting(null);
+            if (inv) showToast(`Invoice #${inv.number} created`);
+            else showToast('Could not convert — quote may no longer be approved');
+          }}
+        />
+      )}
     </View>
   );
 }

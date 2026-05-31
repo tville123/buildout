@@ -1,6 +1,6 @@
 # Buildout — Home Renovation Calculator App
 
-**Last Updated:** 2026-05-30 (Quote Workspace redesign + lint clean)
+**Last Updated:** 2026-05-31 (Quote Workspace bug fixes + polish)
 **Active Branch:** main
 
 ## Project Overview
@@ -27,6 +27,7 @@ A mobile-first app for small contractors and DIYers built in React Native / Expo
 - **Nav refactor + Quote module complete** (2026-05-27): 2-tab bottom nav (Calculate + Quote), `CalculatorScreen` wraps all 7 tools via `ToolSwitcherSheet` modal, `AddToQuoteCTA` on all calc screens, onboarding flow, settings screen, `PaywallSheet` — see nav graph below
 - **Quote Workspace redesign complete** (2026-05-30): 4-section workspace (Dashboard · Quotes · Invoices · Clients), invoice creation, quote→invoice conversion (`ConvertSheet`), client management, `WorkspaceContext.tsx` replaces `QuoteContext.tsx`
 - **Lint clean** (2026-05-30): ESLint passes with zero errors/warnings
+- **Quote Workspace polish** (2026-05-31): default launch tab → Quote; nav taps from quote cards + activity rows route to `ClientDetailScreen`; `ConvertSheet` wired in `ClientDetailScreen`; blank line items pruned before PDF export and invoice creation; `LineItemEditor` uses local raw-string state per row (committed on `onEndEditing`) — eliminates decimal-input bug and per-keystroke AsyncStorage writes; `InvoiceDetailScreen` totals use `formatMoney` for internal consistency; `smartMoney` added to `format.ts`
 - `WorkspaceContext.tsx` — AsyncStorage-backed CRUD for clients, quotes, invoices (keys: `buildout.clients`, `buildout.quotes`, `buildout.invoices`); `ToastContext.tsx` — global pill toast
 - `navigationRef.ts` — global nav ref for imperative navigation (e.g. Settings modal from deep within calc screens)
 
@@ -201,6 +202,7 @@ App.tsx (RootStack)
 
 **Key design notes:**
 
+- Default launch tab is **Quote** (set via `initialRouteName` in `MainTabs`)
 - Tool switching inside Calculate uses `ToolSwitcherSheet` bottom sheet, not a tab bar — avoids `@react-navigation/material-top-tabs` dependency
 - `ToolName` (`types.ts`) drives which screen `CalculatorScreen` renders via a `Record<ToolName, ComponentType>` map
 - `WorkspaceScreen` holds the active section in local state (instant swap, no nav); the fixed `SectionNav` (segmented variant) sits between TopBar and the scroll area. Cross-section jumps use `navigation.navigate('Workspace', { section })`
@@ -413,9 +415,10 @@ buildout/
 ├── utils/
 │   ├── calculator.ts              ← toShoppingList, descBuy, calcTile/Grout/LVP/Carpet/Stairs/Drywall
 │   ├── calculator.test.ts         ← Jest unit tests for all calc functions
-│   ├── format.ts                  ← formatMoney, money0, splitMoney, relDate, daysOverdue/UntilDue, dueDateLabel
+│   ├── format.ts                  ← formatMoney, money0, splitMoney, smartMoney, relDate, daysOverdue/UntilDue, dueDateLabel
 │   ├── workspace.ts               ← pure totals + dashboard/client rollups + invoiceView + legacy migration
-│   └── workspace.test.ts          ← Jest unit tests for workspace math + migration
+│   ├── workspace.test.ts          ← Jest unit tests for workspace math + migration
+│   └── uuid.ts                    ← UUID generation helper
 ├── ads/
 │   └── AdBanner.tsx               ← AdMob stub (renders null)
 ├── assets/

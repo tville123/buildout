@@ -16,6 +16,11 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.drafthouse.buildout",
       "buildNumber": "1",
+      "icon": {
+        "light": "./assets/icon.png",
+        "dark": "./assets/icon-dark.png",
+        "tinted": "./assets/icon-tinted.png"
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
